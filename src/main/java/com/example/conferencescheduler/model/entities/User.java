@@ -39,4 +39,8 @@ public class User {
 
     @ManyToMany(mappedBy = "guests")
     private List<Conference> conferences;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private UserRole userRole;
 }
