@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class SpeakerController {
+public class SpeakerController extends AbstractController{
 
     @Autowired
     private SpeakerService speakerService;
