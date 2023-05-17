@@ -3,5 +3,5 @@ package com.example.conferencescheduler.model.services;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConferenceOwnerService extends MasterService {
+public class SpeakerService extends MasterService{
 }
