@@ -1,7 +1,6 @@
 package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.speakerDTOs.SpeakerRegisterDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
 import com.example.conferencescheduler.model.services.SpeakerService;
 import org.springframework.beans.factory.annotation.Autowired;
