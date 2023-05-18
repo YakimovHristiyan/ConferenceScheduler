@@ -1,7 +1,12 @@
 package com.example.conferencescheduler.model.services;
 
+import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
+import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
+import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
+import com.example.conferencescheduler.model.exceptions.NotFoundException;
+import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import com.example.conferencescheduler.model.repositories.*;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.modelmapper.ModelMapper;
@@ -10,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -103,5 +109,17 @@ public abstract class MasterService {
             return ""; // empty extension
         }
         return name.substring(lastIndexOf);
+    }
+
+    protected boolean validatePassword(String password) {
+        return password != null && !password.isBlank();
+    }
+
+    protected boolean validateEmail(String email) {
+        return email != null && !email.isBlank();
+    }
+
+    protected User getUserById(int id) {
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
     }
 }
