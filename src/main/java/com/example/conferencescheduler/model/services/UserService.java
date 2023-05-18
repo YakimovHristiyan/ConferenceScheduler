@@ -8,17 +8,24 @@ import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import org.apache.commons.validator.routines.EmailValidator;
+import com.example.conferencescheduler.model.exceptions.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.UUID;
 
 @Service
 public class UserService extends MasterService {
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     private static final int SPEAKER_ROLE_ID = 1;
 
@@ -31,8 +38,10 @@ public class UserService extends MasterService {
         user.setRegisterAt(LocalDateTime.now());
         user.setVerified(false);
         userRepository.save(user);
+        sendVerificationEmail(user.getEmail());
         return modelMapper.map(user, UserWithoutPassDTO.class);
     }
+
 
     public UserWithoutPassDTO userLogin(UserLoginDTO dto) {
         String email = dto.getEmail();
@@ -69,5 +78,28 @@ public class UserService extends MasterService {
         return modelMapper.map(editedUser, EditUserDTO.class);
     }
 
+
+    private void sendVerificationEmail(String email) {
+        new Thread(() -> {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("codexio.scheduler@gmail.com");
+            message.setTo(email);
+            message.setSubject("Your Conference Scheduler Account - Verify Your Email Address");
+            message.setText("Please, follow the link bellow in order to verify your email address:\n" +
+                    "http://localhost:7000/users/email-verification");//TODO decide what port to use
+            emailSender.send(message);
+        }).start();
+    }
+
+    public String verifyEmail(int uid) {
+        User user = userRepository.findById(uid)
+                .orElseThrow(() -> new NotFoundException("User not found."));
+        if (user.isVerified()) {
+            throw new BadRequestException("User is already verified.");
+        }
+        user.setVerified(true);
+        userRepository.save(user);
+        return "Your account is now verified.";
+    }
 
 }

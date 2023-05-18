@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -51,5 +54,10 @@ public class UserController extends AbstractController{
         return ResponseEntity.ok(userService.editAccount(newUser, userId));
     }
 
+    @GetMapping(value = "/users/email-verification")
+    public String verifyEmail(HttpSession session) {
+        int uid = getUserId(session);
+        return userService.verifyEmail(uid);
+    }
 
 }
