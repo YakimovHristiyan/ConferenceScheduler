@@ -8,12 +8,11 @@ import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.services.SpeakerService;
 import com.example.conferencescheduler.model.services.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 public class SpeakerController extends AbstractController{
@@ -27,6 +26,12 @@ public class SpeakerController extends AbstractController{
     @ResponseStatus(code = HttpStatus.CREATED)
     public UserWithoutPassDTO register(@RequestBody SpeakerRegisterDTO dto){
         return speakerService.register(dto);
+    }
+
+    @PutMapping("/speakers/image")
+    public void changeProfileImage(@RequestParam(value = "image") MultipartFile image, HttpSession session) {
+        int uid = getUserId(session);
+        speakerService.changeProfileImage(uid, image);
     }
 
 }
