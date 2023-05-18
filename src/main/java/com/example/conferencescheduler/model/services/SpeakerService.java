@@ -1,15 +1,18 @@
 package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.speakerDTOs.SpeakerRegisterDTO;
+import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
 import com.example.conferencescheduler.model.entities.Speaker;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
+import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class SpeakerService extends MasterService{
@@ -22,6 +25,7 @@ public class SpeakerService extends MasterService{
         User user = modelMapper.map(dto, User.class);
         user.setPassword(encoder.encode(user.getPassword()));
         user.setRegisterAt(LocalDateTime.now());
+        user.setVerified(false);
         userRepository.save(user);
 
         Speaker speaker = new Speaker();
