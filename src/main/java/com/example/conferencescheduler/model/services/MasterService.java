@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public abstract class MasterService {
+    protected final static int USER_ROLE = 1;
+    protected final static int SPEAKER_ROLE = 2;
+    protected final static int CONFERENCE_OWNER_ROLE = 3;
     @Autowired
     protected UserRepository userRepository;
     @Autowired
@@ -21,5 +24,5 @@ public abstract class MasterService {
     @Autowired
     protected PasswordEncoder encoder;
     @Autowired
-    private ModelMapper modelMapper;
+    protected ModelMapper modelMapper;
 }
