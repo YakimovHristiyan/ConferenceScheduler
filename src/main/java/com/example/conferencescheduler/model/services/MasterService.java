@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +25,8 @@ public abstract class MasterService {
     protected final static int USER_ROLE = 1;
     protected final static int SPEAKER_ROLE = 2;
     protected final static int CONFERENCE_OWNER_ROLE = 3;
+    protected static final String DEF_PROFILE_IMAGE_URI = "uploads" + File.separator + "def_profile_image.png"; //TODO add the folder
+
     @Autowired
     protected UserRepository userRepository;
     @Autowired

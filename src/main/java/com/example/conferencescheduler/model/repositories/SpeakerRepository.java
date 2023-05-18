@@ -12,4 +12,5 @@ import java.time.LocalDateTime;
 @Repository
 public interface SpeakerRepository extends JpaRepository<Speaker, Integer> {
 
+    Speaker findByUser(User user);
 }
