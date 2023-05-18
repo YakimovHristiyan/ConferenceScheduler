@@ -15,6 +15,9 @@ import java.util.regex.Pattern;
 
 @Service
 public abstract class MasterService {
+    protected final static int USER_ROLE = 1;
+    protected final static int SPEAKER_ROLE = 2;
+    protected final static int CONFERENCE_OWNER_ROLE = 3;
     @Autowired
     protected UserRepository userRepository;
     @Autowired
