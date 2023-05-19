@@ -1,11 +1,18 @@
 package com.example.conferencescheduler.model.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
 @Entity
 @Table(name = "hall")
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class Hall {
 
     @Id
