@@ -1,9 +1,7 @@
 package com.example.conferencescheduler.model.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,41 +10,43 @@ import java.util.List;
 @Table(name = "user")
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int userId;
 
-    @Column(name = "firstName", nullable = false)
+    @Column
     private String firstName;
 
-    @Column(name = "lastName", nullable = false)
+    @Column
     private String lastName;
 
-    @Column(name = "password", nullable = false)
+    @Column
     private String password;
 
-    @Column(name = "email", nullable = false)
+    @Column
     private String email;
 
-    @Column(name = "phone", nullable = false)
+    @Column
     private String phone;
 
-    @Column(name = "registerAt", nullable = false)
+    @Column
     private LocalDateTime registerAt;
 
-    @Column(name = "lastLoginAt", nullable = false)
+    @Column
     private LocalDateTime lastLoginAt;
 
-    @Column(name = "isVerified", nullable = false)
+    @Column
     private boolean isVerified;
 
     @ManyToMany(mappedBy = "guests")
     private List<Conference> conferences;
 
     @ManyToOne
-    @JoinColumn(name = "role_id", nullable = false)
+    @JoinColumn(name = "role_id")
     private UserRole userRole;
 }

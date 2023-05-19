@@ -38,6 +38,8 @@ public abstract class MasterService {
     protected PasswordEncoder encoder;
     @Autowired
     protected ModelMapper modelMapper;
+    @Autowired
+    protected UserRoleRepository userRoleRepository;
 
     protected void validateUserInformation(UserRegisterDTO dto) {
         if (userRepository.findByPhone(dto.getPhone()).isPresent()){

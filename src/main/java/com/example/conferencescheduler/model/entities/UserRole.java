@@ -2,6 +2,7 @@ package com.example.conferencescheduler.model.entities;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import java.util.List;
@@ -10,14 +11,14 @@ import java.util.List;
 @Table(name = "user_role")
 @Getter
 @Setter
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class UserRole {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int roleId;
 
-    @Column(name = "role_type", nullable = false)
+    @Column
     private String roleType;
 
     @OneToMany(mappedBy = "userRole")
