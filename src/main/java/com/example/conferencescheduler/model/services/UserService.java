@@ -24,9 +24,6 @@ import java.util.UUID;
 @Service
 public class UserService extends MasterService {
 
-    @Autowired
-    private JavaMailSender emailSender;
-
     private static final int SPEAKER_ROLE_ID = 1;
 
     @Transactional
@@ -78,20 +75,7 @@ public class UserService extends MasterService {
         return modelMapper.map(editedUser, EditUserDTO.class);
     }
 
-
-    private void sendVerificationEmail(String email) {
-        new Thread(() -> {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom("codexio.scheduler@gmail.com");
-            message.setTo(email);
-            message.setSubject("Your Conference Scheduler Account - Verify Your Email Address");
-            message.setText("Please, follow the link bellow in order to verify your email address:\n" +
-                    "http://localhost:7000/users/email-verification");//TODO decide what port to use
-            emailSender.send(message);
-        }).start();
-    }
-
-    public String verifyEmail(int uid) {
+    public String verifyEmail(int uid) { //TODO test if this is working correctly
         User user = userRepository.findById(uid)
                 .orElseThrow(() -> new NotFoundException("User not found."));
         if (user.isVerified()) {
