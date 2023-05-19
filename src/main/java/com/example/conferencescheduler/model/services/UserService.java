@@ -5,8 +5,11 @@ import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
 import com.example.conferencescheduler.model.entities.User;
+import com.example.conferencescheduler.model.entities.UserRole;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
+import com.example.conferencescheduler.model.repositories.UserRoleRepository;
+import lombok.Builder;
 import org.apache.commons.validator.routines.EmailValidator;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,16 +32,22 @@ public class UserService extends MasterService {
 
     private static final int SPEAKER_ROLE_ID = 1;
 
-    @Transactional
+
     public UserWithoutPassDTO register(UserRegisterDTO dto) {
 //        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         validateUserInformation(dto);
-        User user = modelMapper.map(dto, User.class);
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setRegisterAt(LocalDateTime.now());
-        user.setVerified(false);
+        UserRole userRole = userRoleRepository.findByRoleId(dto.getRoleId());
+        User user = User.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .phone(dto.getPhone())
+                .email(dto.getEmail())
+                .userRole(userRole)
+                .password(encoder.encode(dto.getPassword()))
+                .registerAt(LocalDateTime.now())
+                .build();
         userRepository.save(user);
-        sendVerificationEmail(user.getEmail());
+//        sendVerificationEmail(user.getEmail());
         return modelMapper.map(user, UserWithoutPassDTO.class);
     }
 

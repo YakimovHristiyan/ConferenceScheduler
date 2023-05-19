@@ -6,6 +6,7 @@ import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.services.UserService;
+import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@PermitAll
 public class UserController extends AbstractController{
 
     @Autowired
