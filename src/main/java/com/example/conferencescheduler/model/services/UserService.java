@@ -44,7 +44,7 @@ public class UserService extends MasterService {
                 .registerAt(LocalDateTime.now())
                 .build();
         userRepository.save(user);
-//        sendVerificationEmail(user.getEmail());
+        sendVerificationEmail(user.getEmail(), user.getUserId());
         return modelMapper.map(user, UserWithoutPassDTO.class);
     }
 

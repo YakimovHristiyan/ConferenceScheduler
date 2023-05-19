@@ -13,9 +13,9 @@ public class SecurityInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String uri = request.getRequestURI();
-        if (uri.contains("registration") ||
+        if (uri.contains("users/registration") ||
                 uri.contains("email-verification") ||
-                uri.contains("login") ||
+                uri.contains("auth") ||
                 uri.contains("logout")) {
             return true;
         }

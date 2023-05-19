@@ -24,7 +24,7 @@ public class UserController extends AbstractController{
     @Autowired
     private UserService userService;
 
-    @PostMapping("/users")
+    @PostMapping("/users/registration")
     @ResponseStatus(code = HttpStatus.CREATED)
     public UserWithoutPassDTO register(@RequestBody UserRegisterDTO dto){
         return userService.register(dto);
@@ -56,9 +56,8 @@ public class UserController extends AbstractController{
         return ResponseEntity.ok(userService.editAccount(newUser, userId));
     }
 
-    @GetMapping(value = "/users/email-verification")
-    public String verifyEmail(HttpSession session) {
-        int uid = getUserId(session);
+    @GetMapping(value = "/users/email-verification/{uid}")
+    public String verifyEmail(@PathVariable int uid) {
         return userService.verifyEmail(uid);
     }
 

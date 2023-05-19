@@ -111,14 +111,14 @@ public abstract class MasterService {
         return false;
     }
 
-    protected void sendVerificationEmail(String email) {
+    protected void sendVerificationEmail(String email, int uid) {
         new Thread(() -> {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom("codexio.scheduler@gmail.com");
             message.setTo(email);
             message.setSubject("Your Conference Scheduler Account - Verify Your Email Address");
             message.setText("Please, follow the link bellow in order to verify your email address:\n" +
-                    "http://localhost:7000/users/email-verification");//TODO decide what port to use
+                    "http://localhost:8080/users/email-verification/" + uid);
             emailSender.send(message);
         }).start();
     }
