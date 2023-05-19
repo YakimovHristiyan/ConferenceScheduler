@@ -35,7 +35,7 @@ public class ConferenceSchedulerApplication {
         mailSender.setPort(587);
 
         mailSender.setUsername("codexio.scheduler@gmail.com");
-        mailSender.setPassword("lwcytxklkohlebwx");
+        mailSender.setPassword("dbiqxtbzhggctlim");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
