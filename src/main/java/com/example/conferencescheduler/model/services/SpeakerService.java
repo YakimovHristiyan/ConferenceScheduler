@@ -33,6 +33,7 @@ public class SpeakerService extends MasterService {
         user.setRegisterAt(LocalDateTime.now());
         user.setVerified(false);
         userRepository.save(user);
+        sendVerificationEmail(user.getEmail());
 
         Speaker speaker = new Speaker();
         speaker.setProfilePhoto(DEF_PROFILE_IMAGE_URI);

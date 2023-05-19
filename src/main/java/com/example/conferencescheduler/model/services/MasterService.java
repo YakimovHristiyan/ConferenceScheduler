@@ -11,6 +11,8 @@ import com.example.conferencescheduler.model.repositories.*;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,6 +29,8 @@ public abstract class MasterService {
     protected final static int CONFERENCE_OWNER_ROLE = 3;
     protected static final String DEF_PROFILE_IMAGE_URI = "uploads" + File.separator + "def_profile_image.png"; //TODO add the folder
 
+    @Autowired
+    private JavaMailSender emailSender;
     @Autowired
     protected UserRepository userRepository;
     @Autowired
@@ -105,6 +109,18 @@ public abstract class MasterService {
             return true;
         }
         return false;
+    }
+
+    protected void sendVerificationEmail(String email) {
+        new Thread(() -> {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("codexio.scheduler@gmail.com");
+            message.setTo(email);
+            message.setSubject("Your Conference Scheduler Account - Verify Your Email Address");
+            message.setText("Please, follow the link bellow in order to verify your email address:\n" +
+                    "http://localhost:7000/users/email-verification");//TODO decide what port to use
+            emailSender.send(message);
+        }).start();
     }
 
     protected static String getFileExtension(MultipartFile file) {
