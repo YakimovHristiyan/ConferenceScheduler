@@ -3,6 +3,8 @@ package com.example.conferencescheduler.model.services;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
+import com.example.conferencescheduler.model.entities.Conference;
+import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
@@ -43,7 +45,7 @@ public abstract class MasterService {
     protected ModelMapper modelMapper;
 
     protected void validateUserInformation(UserRegisterDTO dto) {
-        if (userRepository.findByPhone(dto.getPhone()).isPresent()){
+        if (userRepository.findByPhone(dto.getPhone()).isPresent()) {
             throw new BadRequestException("The phone number exist!");
         }
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -95,11 +97,11 @@ public abstract class MasterService {
         return EmailValidator.getInstance(true).isValid(email);
     }
 
-    protected static boolean isUsernameValid(String username){
+    protected static boolean isUsernameValid(String username) {
         Pattern p = Pattern.compile("^[a-zA-Z_]([a-zA-Z0-9_]){2,16}");
         Matcher m = p.matcher(username);
         boolean hasMatch = m.matches();
-        if (hasMatch){
+        if (hasMatch) {
             return true;
         }
         return false;
@@ -124,5 +126,13 @@ public abstract class MasterService {
 
     protected User getUserById(int id) {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
+    }
+
+    protected Conference getConferenceById(int conferenceId) {
+        return conferenceRepository.findById(conferenceId).orElseThrow(() -> new NotFoundException("Conference not found!"));
+    }
+
+    protected Hall getHallById(int hallId) {
+        return  hallRepository.findById(hallId).orElseThrow(() -> new NotFoundException("Hall does not exist!"));
     }
 }
