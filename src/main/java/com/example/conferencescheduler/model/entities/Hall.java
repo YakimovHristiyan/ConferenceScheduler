@@ -25,10 +25,14 @@ public class Hall {
     @Column(name = "capacity", nullable = false)
     private Integer capacity;
 
-    @ManyToOne
-    @JoinColumn(name = "conference_id", nullable = false)
-    private Conference conference;
-
     @OneToMany(mappedBy = "hall")
     private List<Session> sessions;
+
+    @ManyToMany
+    @JoinTable(
+            name = "conference_hall",
+            joinColumns = @JoinColumn(name = "hall_id"),
+            inverseJoinColumns = @JoinColumn(name = "conference_id")
+    )
+    private List<Conference> conferences;
 }

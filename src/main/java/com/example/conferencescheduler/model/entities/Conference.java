@@ -38,14 +38,9 @@ public class Conference {
     @JoinColumn(name = "Conference_owner_id", nullable = false)
     private User owner;
 
-    @ManyToMany
-    @JoinTable(
-            name = "guest_conference",
-            joinColumns = @JoinColumn(name = "conference_id"),
-            inverseJoinColumns = @JoinColumn(name = "guest_id")
-    )
-    private List<User> guests;
+    @OneToMany(mappedBy = "session")
+    private List<Session> sessions;
 
-    @OneToMany(mappedBy = "conference")
+    @ManyToMany(mappedBy = "conferences")
     private List<Hall> halls;
 }
