@@ -38,7 +38,7 @@ public class Conference {
     @JoinColumn(name = "Conference_owner_id", nullable = false)
     private User owner;
 
-    @OneToMany(mappedBy = "session")
+    @OneToMany(mappedBy = "conference")
     private List<Session> sessions;
 
     @ManyToMany(mappedBy = "conferences")

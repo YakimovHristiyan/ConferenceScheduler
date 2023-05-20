@@ -64,11 +64,11 @@ public class UserController extends AbstractController{
         return userService.verifyEmail(uid);
     }
 
-    @PutMapping("/users/attendance")
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public List<Session> assertAttendance(HttpServletRequest request, int conferenceId, int sessionId){
-        int userId = getLoggedUserId(request);
-        return userService.assertAttendance(userId, conferenceId, sessionId);
-    }
+//    @PutMapping("/users/attendance")
+//    @ResponseStatus(code = HttpStatus.ACCEPTED)
+//    public List<Session> assertAttendance(HttpServletRequest request, int conferenceId, int sessionId){
+//        int userId = getLoggedUserId(request);
+//        return userService.assertAttendance(userId, conferenceId, sessionId);
+//    }
 
 }
