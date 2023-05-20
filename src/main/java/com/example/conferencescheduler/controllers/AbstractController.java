@@ -1,6 +1,7 @@
 package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.ExceptionDTO;
+import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.ForbiddenException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;

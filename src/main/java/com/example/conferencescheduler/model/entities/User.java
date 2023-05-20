@@ -44,7 +44,7 @@ public class User {
     private boolean isVerified;
 
     @ManyToMany(mappedBy = "guests")
-    private List<Conference> conferences;
+    private List<Session> sessions;
 
     @ManyToOne
     @JoinColumn(name = "role_id")

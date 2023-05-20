@@ -4,6 +4,8 @@ import com.example.conferencescheduler.model.dtos.userDTOs.EditUserDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
+import com.example.conferencescheduler.model.entities.Conference;
+import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.entities.UserRole;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,6 +40,7 @@ public class UserService extends MasterService {
 //        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         validateUserInformation(dto);
         UserRole userRole = userRoleRepository.findByRoleId(dto.getRoleId());
+        System.out.println(dto.getRoleId());
         User user = User.builder()
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
@@ -62,7 +66,11 @@ public class UserService extends MasterService {
         if (user.isPresent()) {
             User u = user.get();
             if (encoder.matches(password, u.getPassword())) {
-                return modelMapper.map(user.get(), UserWithoutPassDTO.class);
+                if (u.isVerified()){
+                    return modelMapper.map(user.get(), UserWithoutPassDTO.class);
+                }else {
+                    throw new UnauthorizedException("Your account is not verified");
+                }
             } else {
                 throw new UnauthorizedException("Wrong credentials!");
             }
@@ -111,4 +119,15 @@ public class UserService extends MasterService {
         return "Your account is now verified.";
     }
 
+//    public List<Session> assertAttendance(int userId, int conferenceId, int sessionId) {
+//        //1.Get User by id
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new NotFoundException("User not found."));
+//        //2. Get Conference by id
+//        Conference conference = conferenceRepository.findById(conferenceId)
+//                .orElseThrow(()->new NotFoundException("Conference not found."));
+//        //2.Check if already this user is going on this conference
+//        //3.Add user as a guest of the conference
+//
+//    }
 }

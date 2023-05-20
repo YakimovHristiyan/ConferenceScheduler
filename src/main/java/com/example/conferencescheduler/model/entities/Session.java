@@ -3,6 +3,7 @@ package com.example.conferencescheduler.model.entities;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "session")
@@ -27,4 +28,12 @@ public class Session {
     @ManyToOne
     @JoinColumn(name = "hall_id", nullable = false)
     private Hall hall;
+
+    @ManyToMany
+    @JoinTable(
+            name = "guest_session",
+            joinColumns = @JoinColumn(name = "session_id"),
+            inverseJoinColumns = @JoinColumn(name = "guest_id")
+    )
+    private List<User> guests;
 }
