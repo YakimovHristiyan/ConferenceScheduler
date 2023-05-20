@@ -35,6 +35,10 @@ public class Session {
     @JoinColumn(name = "hall_id", nullable = false)
     private Hall hall;
 
+    @ManyToOne
+    @JoinColumn(name = "conference_id", nullable = false)
+    private Conference conference;
+
     @ManyToMany
     @JoinTable(
             name = "guest_session",
