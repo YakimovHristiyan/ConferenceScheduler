@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -40,4 +43,5 @@ public class Hall {
     )
     @JsonIgnore
     private List<Conference> conferences;
+
 }

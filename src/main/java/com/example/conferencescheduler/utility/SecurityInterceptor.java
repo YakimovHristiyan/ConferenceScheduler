@@ -10,7 +10,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
     public static final String LOGGED = "logged";
     public static final String REMOTE_ADDRESS = "remote_address";
 
-    @Override
+    @Override//TODO DA SE OPRAVI!!!!!!!!!!!!
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String uri = request.getRequestURI();
         if (uri.contains("users/registration") ||
