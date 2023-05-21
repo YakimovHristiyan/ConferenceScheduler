@@ -25,10 +25,10 @@ public class Hall {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int hallId;
 
-    @Column(name = "hallName", nullable = false)
+    @Column
     private String hallName;
 
-    @Column(name = "capacity", nullable = false)
+    @Column
     private Integer capacity;
 
     @OneToMany(mappedBy = "hall")

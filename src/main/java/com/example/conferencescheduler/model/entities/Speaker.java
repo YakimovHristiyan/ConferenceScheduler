@@ -16,14 +16,14 @@ public class Speaker {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int speakerId;
 
-    @Column(name = "description")
+    @Column
     private
     String description;
 
-    @Column(name = "profilePhoto", nullable = false)
+    @Column
     private String profilePhoto;
 
     @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 }

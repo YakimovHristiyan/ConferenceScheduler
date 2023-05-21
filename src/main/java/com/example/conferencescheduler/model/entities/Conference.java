@@ -22,23 +22,23 @@ public class Conference {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int conferenceId;
 
-    @Column(name = "conferenceName", nullable = false)
+    @Column
     private String conferenceName;
 
-    @Column(name = "description", nullable = false)
+    @Column
     private String description;
 
-    @Column(name = "address", nullable = false)
+    @Column
     private String address;
 
-    @Column(name = "startDate", nullable = false)
+    @Column
     private LocalDateTime startDate;
 
-    @Column(name = "endDate", nullable = false)
+    @Column
     private LocalDateTime endDate;
 
     @OneToOne
-    @JoinColumn(name = "Conference_owner_id", nullable = false)
+    @JoinColumn(name = "Conference_owner_id")
     @JsonIgnore
     private User owner;
 

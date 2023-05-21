@@ -22,24 +22,24 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int sessionId;
 
-    @Column(name = "name", nullable = false)
+    @Column
     private String name;
 
-    @Column(name = "description", nullable = false)
+    @Column
     private String description;
 
-    @Column(name = "startDate", nullable = false)
+    @Column
     private LocalDateTime startDate;
 
-    @Column(name = "endDate", nullable = false)
+    @Column
     private LocalDateTime endDate;
 
     @ManyToOne
-    @JoinColumn(name = "hall_id", nullable = false)
+    @JoinColumn(name = "hall_id")
     private Hall hall;
 
     @ManyToOne
-    @JoinColumn(name = "conference_id", nullable = false)
+    @JoinColumn(name = "conference_id")
     private Conference conference;
 
     @ManyToMany
