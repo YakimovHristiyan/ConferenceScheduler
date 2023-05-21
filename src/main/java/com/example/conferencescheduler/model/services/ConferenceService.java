@@ -1,5 +1,6 @@
 package com.example.conferencescheduler.model.services;
 
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.User;
@@ -51,4 +52,13 @@ public class ConferenceService extends MasterService {
     public ConferenceDTO viewConference(int id) {
         return modelMapper.map(getConferenceById(id), ConferenceDTO.class);
     }
+
+//    public AssignConferenceDTO assignConferenceToHall(AssignConferenceDTO dto) {
+//        /*
+//        1. Get hall by id
+//        2. Check if current date time slot is available
+//        3. Add conference to the hall
+//
+//         */
+//    }
 }

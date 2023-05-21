@@ -1,16 +1,16 @@
 package com.example.conferencescheduler.model.dtos.hallDTOs;
 
 import com.example.conferencescheduler.model.entities.Conference;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.relational.core.sql.In;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 @Data
+@EqualsAndHashCode
 public class HallDTO {
 
     private int hallId;
