@@ -83,6 +83,12 @@ public class HallService extends MasterService {
             hallDTO.getTimes().remove(time);
             dtos.add(hallDTO);
         };
+        if (dtos.isEmpty()){
+            return hallRepository.findAll()
+                    .stream()
+                    .map(hall -> modelMapper.map(hall, HallDTO.class))
+                    .toList();
+        }
         return dtos;
     }
 }

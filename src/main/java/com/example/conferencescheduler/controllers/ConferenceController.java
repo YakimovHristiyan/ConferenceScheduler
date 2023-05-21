@@ -1,7 +1,9 @@
 package com.example.conferencescheduler.controllers;
 
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
 import com.example.conferencescheduler.model.services.ConferenceService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,8 +40,7 @@ public class ConferenceController extends AbstractController {
 
     @GetMapping("/conference")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public List<ConferenceDTO> getAllConferences(HttpSession session) {
-        int id = getUserId(session);
+    public List<ConferenceDTO> getAllConferences() {
         return conferenceService.getAllConferences();
     }
 
@@ -49,4 +50,14 @@ public class ConferenceController extends AbstractController {
         int id = getUserId(session);
         return conferenceService.viewConference(id);
     }
+
+//    @PutMapping("/conference/book")
+//    @ResponseStatus(code = HttpStatus.ACCEPTED)
+//    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto, HttpServletRequest request){
+//        //TODO check if user is conference owner
+//        getLoggedUserId(request);
+//        return conferenceService.assignConferenceToHall(dto);
+//    }
+
+
 }

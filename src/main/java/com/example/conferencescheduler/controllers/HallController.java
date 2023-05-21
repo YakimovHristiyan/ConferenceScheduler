@@ -50,4 +50,6 @@ public class HallController extends AbstractController {
     public List<HallDTO> getAvailableTimeSlots(@RequestBody DateDTO dto){
         return hallService.getAvailableTimeSlots(dto);
     }
+
+
 }
