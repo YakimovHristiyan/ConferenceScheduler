@@ -1,6 +1,7 @@
 package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.hallDTOs.CreateHallDTO;
+import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
 import com.example.conferencescheduler.model.dtos.hallDTOs.HallDTO;
 import com.example.conferencescheduler.model.dtos.hallDTOs.HallWithSessionsDTO;
 import com.example.conferencescheduler.model.services.HallService;
@@ -44,10 +45,9 @@ public class HallController extends AbstractController {
         return hallService.viewHall(hid);
     }
 
-    @GetMapping("/hall/")
+    @GetMapping("/hall/free-halls-slots")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<HallDTO> viewAllHalls(){
-        return hallService.viewAllHalls();
+    public List<HallDTO> getAvailableTimeSlots(@RequestBody DateDTO dto){
+        return hallService.getAvailableTimeSlots(dto);
     }
-
 }
