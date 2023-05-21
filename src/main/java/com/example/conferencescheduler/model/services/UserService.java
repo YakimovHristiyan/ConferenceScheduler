@@ -1,17 +1,12 @@
 package com.example.conferencescheduler.model.services;
 
-import com.example.conferencescheduler.model.dtos.userDTOs.EditUserDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
-import com.example.conferencescheduler.model.entities.Conference;
-import com.example.conferencescheduler.model.entities.Session;
-import com.example.conferencescheduler.model.entities.User;
-import com.example.conferencescheduler.model.entities.UserRole;
+import com.example.conferencescheduler.model.dtos.userDTOs.*;
+import com.example.conferencescheduler.model.entities.*;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import com.example.conferencescheduler.model.repositories.UserRoleRepository;
 import lombok.Builder;
+import lombok.ToString;
 import org.apache.commons.validator.routines.EmailValidator;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,15 +98,71 @@ public class UserService extends MasterService {
         return "Your account is now verified.";
     }
 
-//    public List<Session> assertAttendance(int userId, int conferenceId, int sessionId) {
-//        //1.Get User by id
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new NotFoundException("User not found."));
-//        //2. Get Conference by id
-//        Conference conference = conferenceRepository.findById(conferenceId)
-//                .orElseThrow(()->new NotFoundException("Conference not found."));
-//        //2.Check if already this user is going on this conference
-//        //3.Add user as a guest of the conference
-//
-//    }
+    public UserWithSessionDTO assertAttendance(int userId, AttendanceDTO attendanceDTO) {
+        //1.Get User by id
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found."));
+        //2.Get Conference by id
+        Conference conference = conferenceRepository.findById(attendanceDTO.getConferenceId())
+                .orElseThrow(()->new NotFoundException("Conference not found."));
+        //3.Get session by id
+        Session session = sessionRepository.findBySessionId(attendanceDTO.getSessionId())
+                .orElseThrow(()-> new NotFoundException("Session not found."));
+        if (session == null){
+            throw new BadRequestException("Session not found.");
+        }
+        //4.Check if already this user is going on this conference
+        if (user.getSessions().contains(session)){
+            throw new BadRequestException("You are already guest for this session.");
+        }else {
+            /*
+           5.Can not mark colliding sessions in more than one hall
+           - iterate over all session in the list and check if
+           there have another session in this time in another room
+            */
+            //6. Add session in the list
+            LocalDateTime wantedSessionStartDate = session.getStartDate();
+            LocalDateTime wantedSessionEndDate = session.getEndDate();
+            boolean hasColliding = false;
+            if (user.getSessions().isEmpty()){
+                if (session.getGuests().size() == session.getHall().getCapacity()){
+                    throw new BadRequestException("There is no more free seat in the hall.");
+                }else {
+                    user.getSessions().add(session);
+                    session.getGuests().add(user);
+                    userRepository.save(user);
+                    sessionRepository.save(session);
+                    return modelMapper.map(user, UserWithSessionDTO.class);
+                }
+            }else {
+                for (Session s : user.getSessions()) {
+                    LocalDateTime currentSessionStartDate = s.getStartDate();
+                    LocalDateTime currentSessionEndDate = s.getEndDate();
+                    Hall hall = s.getHall();
+                    if (session.getHall().getHallId() != hall.getHallId()){
+                        if (!wantedSessionStartDate.isAfter(currentSessionEndDate)
+                                && !wantedSessionEndDate.isBefore(currentSessionStartDate))
+                        {
+                            hasColliding = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            System.out.println(hasColliding);
+            if (hasColliding){
+                throw new BadRequestException("Current session is colliding with other session in your list.");
+            }else {
+                if (session.getGuests().size() == session.getHall().getCapacity()){
+                    throw new BadRequestException("There is no more free seat in the hall.");
+                }else {
+                    user.getSessions().add(session);
+                    session.getGuests().add(user);
+                    userRepository.save(user);
+                    sessionRepository.save(session);
+                }
+            }
+        }
+        return modelMapper.map(user, UserWithSessionDTO.class);
+    }
 }
