@@ -1,5 +1,8 @@
 package com.example.conferencescheduler.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class Hall {
     private Integer capacity;
 
     @OneToMany(mappedBy = "hall")
+    @JsonIgnore
     private List<Session> sessions;
 
     @ManyToMany
@@ -34,5 +38,6 @@ public class Hall {
             joinColumns = @JoinColumn(name = "hall_id"),
             inverseJoinColumns = @JoinColumn(name = "conference_id")
     )
+    @JsonIgnore
     private List<Conference> conferences;
 }

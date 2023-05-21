@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface ConferenceRepository extends JpaRepository<Conference, Integer> {
 
-    Optional<Conference> findById(int id);
+    Optional<Conference> findByConferenceId(int id);
 }

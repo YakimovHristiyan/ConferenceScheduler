@@ -23,7 +23,7 @@ public class SessionService extends MasterService {
     public SessionDTO deleteSession(int userId, int sessionId) {
         User user = getUserById(userId);
         Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new NotFoundException("Session not found!"));
-        Conference conference = getConferenceById(session.getHall().getConference().getConferenceId());
+        Conference conference = getConferenceById(session.getConference().getConferenceId());
         validateCanOwnerRights(conference, user);
         //Todo Notify all guests that the session is removed
         sessionRepository.delete(session);
