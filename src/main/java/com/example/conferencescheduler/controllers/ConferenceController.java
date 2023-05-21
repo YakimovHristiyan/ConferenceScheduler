@@ -51,13 +51,13 @@ public class ConferenceController extends AbstractController {
         return conferenceService.viewConference(id);
     }
 
-//    @PutMapping("/conference/book")
-//    @ResponseStatus(code = HttpStatus.ACCEPTED)
-//    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto, HttpServletRequest request){
-//        //TODO check if user is conference owner
-//        getLoggedUserId(request);
-//        return conferenceService.assignConferenceToHall(dto);
-//    }
+    @PutMapping("/conference/book")
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
+    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto, HttpServletRequest request){
+        //TODO check if user is conference owner
+        getLoggedUserId(request);
+        return conferenceService.assignConferenceToHall(dto);
+    }
 
 
 }
