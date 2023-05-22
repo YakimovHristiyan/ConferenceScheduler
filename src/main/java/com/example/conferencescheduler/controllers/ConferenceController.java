@@ -19,22 +19,22 @@ public class ConferenceController extends AbstractController {
 
     @PostMapping("/conference")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ConferenceDTO publishConference(@RequestBody ConferenceDTO conferenceDTO, HttpServletRequest request) {
-        int id = getLoggedUserId(request);
+    public ConferenceDTO publishConference(@RequestBody ConferenceDTO conferenceDTO, HttpSession session) {
+        int id = getUserId(session);
         return conferenceService.publishConference(conferenceDTO, id);
     }
 
     @PutMapping("/conference")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public ConferenceDTO editConference(@RequestBody ConferenceDTO conferenceDTO, HttpServletRequest request) {
-        int id = getLoggedUserId(request);
+    public ConferenceDTO editConference(@RequestBody ConferenceDTO conferenceDTO, HttpSession session) {
+        int id = getUserId(session);
         return conferenceService.editConference(conferenceDTO, id);
     }
 
     @DeleteMapping("/conference/{cid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public ConferenceDTO deleteConference(@PathVariable int cid, HttpServletRequest request) {
-        int id = getLoggedUserId(request);
+    public ConferenceDTO deleteConference(@PathVariable int cid, HttpSession session) {
+        int id = getUserId(session);
         return conferenceService.deleteConference(cid, id);
     }
 
@@ -46,8 +46,8 @@ public class ConferenceController extends AbstractController {
 
     @PostMapping("/conference/{cid}")
     @ResponseStatus(code = HttpStatus.OK)
-    public ConferenceDTO viewConference(@PathVariable int cid, HttpServletRequest request) {
-        int id = getLoggedUserId(request);
+    public ConferenceDTO viewConference(@PathVariable int cid, HttpSession session) {
+        int id = getUserId(session);
         return conferenceService.viewConference(id);
     }
 

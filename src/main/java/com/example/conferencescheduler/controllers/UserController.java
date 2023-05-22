@@ -72,8 +72,8 @@ public class UserController extends AbstractController {
 
     @PutMapping("/user/maximumprogram")
     @ResponseStatus(code = HttpStatus.OK)
-    public UserWithSessionDTO applyForMaximumProgram(@RequestBody DateDTO dateDTO, HttpServletRequest request) {
-        int userId = getLoggedUserId(request);
+    public UserWithSessionDTO applyForMaximumProgram(@RequestBody DateDTO dateDTO, HttpSession session) {
+        int userId = getUserId(session);
         return userService.applyForMaximumProgram(userId, dateDTO);
     }
 }

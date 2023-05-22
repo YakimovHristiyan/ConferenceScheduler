@@ -18,11 +18,11 @@ import java.util.List;
 public class SessionService extends MasterService {
 
     @Transactional
-    public SessionDTO addSession(SessionDTO sessionDTO, int userId, int conferenceId) {
+    public SessionDTO addSession(SessionDTO sessionDTO, int userId) {
 
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = getUserById(userId);
-        Conference conference = getConferenceById(conferenceId);
+        Conference conference = getConferenceById(sessionDTO.getConferenceId());
         validateOwnerRights(conference, user);
         Session session = modelMapper.map(sessionDTO, Session.class);
         //Todo check if the hour is free to add this session

@@ -117,33 +117,18 @@ public class UserService extends MasterService {
         if (user.getSessions().isEmpty()) {
             saveSessionIfFree(session, user);
             return modelMapper.map(user, UserWithSessionDTO.class);
-        } else {
-            for (Session s : user.getSessions()) {
-                LocalDateTime currentSessionStartDate = s.getStartDate();
-                LocalDateTime currentSessionEndDate = s.getEndDate();
-                Hall hall = s.getHall();
-                if (session.getHall().getHallId() != hall.getHallId()) {
-                    if (!wantedSessionStartDate.isAfter(currentSessionEndDate)
-                            && !wantedSessionEndDate.isBefore(currentSessionStartDate)) {
-                        hasColliding = true;
-                        break;           
-                    }
+        }
+        for (Session s : user.getSessions()) {
+            LocalDateTime currentSessionStartDate = s.getStartDate();
+            LocalDateTime currentSessionEndDate = s.getEndDate();
+            Hall hall = s.getHall();
+            if (session.getHall().getHallId() != hall.getHallId()) {
+                if (!wantedSessionStartDate.isAfter(currentSessionEndDate)
+                        && !wantedSessionEndDate.isBefore(currentSessionStartDate)) {
+                    hasColliding = true;
+                    break;
                 }
             }
-            System.out.println(hasColliding);
-            if (hasColliding) {
-                throw new BadRequestException("Current session is colliding with other session in your list.");
-            } else {
-                if (session.getGuests().size() == session.getHall().getCapacity()) {
-                    throw new BadRequestException("There is no more free seat in the hall.");
-                } else {
-                    user.getSessions().add(session);
-                    session.getGuests().add(user);
-                    userRepository.save(user);
-                    sessionRepository.save(session);
-                }
-            }
-
         }
         System.out.println(hasColliding);
         if (hasColliding) {
