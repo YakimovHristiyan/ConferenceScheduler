@@ -15,19 +15,28 @@ import java.util.List;
 
 @Service
 public class SessionService extends MasterService {
-    public SessionDTO addSession(SessionDTO sessionDTO, int userId) {
+
+    public SessionDTO addSession(SessionDTO dto, int userId) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = getUserById(userId);
-        Conference conference = getConferenceById(conferenceId);
+        Hall hall = getHallById(dto.getHallId());
+        Conference conference = getConferenceById(dto.getConferenceId());
         validateOwnerRights(conference, user);
-        Session session = modelMapper.map(sessionDTO, Session.class);
+        System.out.println(dto.getBookedHours());
+        Session session = Session.builder()
+                .name(dto.getName())
+                .conference(conference)
+                .description(dto.getDescription())
+                .hall(hall)
+                .startDate(dto.getBookedHours().get(0))
+                .endDate(dto.getBookedHours().get(dto.getBookedHours().size() - 1))
+                .build();
         //Todo check if the hour is free to add this session
-        session.setEndDate(session.getStartDate().plusMinutes(60));
         sessionRepository.save(session);
-        conference.setEndDate(conference.getStartDate().plusMinutes(60));
-        conferenceRepository.save(conference);
-        addSessionToHall(session.getSessionId(), sessionDTO.getHallId());
-        return modelMapper.map(session, SessionDTO.class);
+        //TODO if we want to set the end date time for the conference we need to get all the sessions and check which one is with the latest hour.
+        hall.getSessions().add(session);
+        hallRepository.save(hall);
+        return dto;
     }
 
     public SessionDTO deleteSession(int userId, int sessionId) {
@@ -36,14 +45,14 @@ public class SessionService extends MasterService {
         Conference conference = getConferenceById(session.getConference().getConferenceId());
 
         validateOwnerRights(conference, user);
-  
+
         //Todo Notify all guests that the session is removed
         sessionRepository.delete(session);
         return modelMapper.map(session, SessionDTO.class);
     }
 
     public void validateOwnerRights(Conference conference, User user) {
-        if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE || conference.getOwner().getUserId() != user.getUserId()){
+        if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE || conference.getOwner().getUserId() != user.getUserId()) {
             throw new UnauthorizedException("You are not owner of this conference!");
         }
     }
@@ -54,14 +63,9 @@ public class SessionService extends MasterService {
                 .orElseThrow(() -> new NotFoundException("Conference not found."));
         return conference.getSessions()
                 .stream()
-                .map(session ->modelMapper.map(session, SessionDTO.class))
+                .map(session -> modelMapper.map(session, SessionDTO.class))
                 .toList();
     }
 
-    private void addSessionToHall(int sid, int hid) {
-        Session session = getSessionById(sid);
-        Hall hall = getHallById(hid);
-        hall.getSessions().add(session);
-        hallRepository.save(hall);
-    }
+
 }
