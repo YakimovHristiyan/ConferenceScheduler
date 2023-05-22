@@ -1,9 +1,11 @@
 package com.example.conferencescheduler.controllers;
 
+import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.*;
 import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.services.UserService;
+import com.google.api.client.util.DateTime;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -19,14 +21,14 @@ import java.util.List;
 
 @RestController
 @PermitAll
-public class UserController extends AbstractController{
+public class UserController extends AbstractController {
 
     @Autowired
     private UserService userService;
 
     @PostMapping("/users/registration")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserWithoutPassDTO register(@RequestBody UserRegisterDTO dto){
+    public UserWithoutPassDTO register(@RequestBody UserRegisterDTO dto) {
         return userService.register(dto);
     }
 
@@ -68,4 +70,10 @@ public class UserController extends AbstractController{
         return userService.assertAttendance(userId, attendanceDTO);
     }
 
+    @PutMapping("/user/maximumprogram")
+    @ResponseStatus(code = HttpStatus.OK)
+    public UserWithSessionDTO applyForMaximumProgram(@RequestBody DateDTO dateDTO, HttpServletRequest request) {
+        int userId = getLoggedUserId(request);
+        return userService.applyForMaximumProgram(userId, dateDTO);
+    }
 }

@@ -46,7 +46,7 @@ public class SpeakerService extends MasterService {
     public void changeProfileImage(int uid, MultipartFile image) {
         Speaker speaker = validateSpeaker(uid);
         String oldImageURI = speaker.getProfilePhoto();
-        if(oldImageURI != null && !oldImageURI.equals(DEF_PROFILE_IMAGE_URI)) {
+        if (oldImageURI != null && !oldImageURI.equals(DEF_PROFILE_IMAGE_URI)) {
             deleteOldFile(speaker.getProfilePhoto());
         }
         validateImage(image);
