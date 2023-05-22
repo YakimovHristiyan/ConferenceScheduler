@@ -1,5 +1,6 @@
 package com.example.conferencescheduler.controllers;
 
+import com.example.conferencescheduler.model.dtos.hallDTOs.HallWithSessionsDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.services.SessionService;
 import jakarta.servlet.http.HttpSession;
@@ -15,11 +16,11 @@ public class SessionController extends AbstractController{
     @Autowired
     private SessionService sessionService;
 
-    @PostMapping("/session/{cid}")
+    @PostMapping("/session")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public SessionDTO addSession(@RequestBody SessionDTO sessionDTO, @PathVariable int cid, HttpSession httpSession){
+    public SessionDTO addSession(@RequestBody SessionDTO sessionDTO, HttpSession httpSession){
         int userId = getUserId(httpSession);
-        return sessionService.addSession(sessionDTO, userId, cid);
+        return sessionService.addSession(sessionDTO, userId);
     }
     @DeleteMapping("/session/{sid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)

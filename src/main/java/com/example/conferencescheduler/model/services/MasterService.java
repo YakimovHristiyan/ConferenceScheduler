@@ -5,6 +5,7 @@ import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
+import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
@@ -28,7 +29,7 @@ import java.util.regex.Pattern;
 public abstract class MasterService {
     protected final static int USER_ROLE = 1;
     protected final static int SPEAKER_ROLE = 2;
-    protected final static int CONFERENCE_OWNER_ROLE = 3;
+    protected final static int  CONFERENCE_OWNER_ROLE = 3;
     protected static final String DEF_PROFILE_IMAGE_URI = "uploads" + File.separator + "def_profile_image.png"; //TODO add the folder
 
     @Autowired
@@ -152,5 +153,9 @@ public abstract class MasterService {
 
     protected Hall getHallById(int hallId) {
         return  hallRepository.findById(hallId).orElseThrow(() -> new NotFoundException("Hall does not exist!"));
+    }
+
+    protected Session getSessionById(int sessionId){
+        return sessionRepository.findBySessionId(sessionId).orElseThrow(() -> new NotFoundException("Session not found."));
     }
 }
