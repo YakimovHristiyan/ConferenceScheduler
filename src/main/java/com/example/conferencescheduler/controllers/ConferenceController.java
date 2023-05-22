@@ -30,21 +30,21 @@ public class ConferenceController extends AbstractController {
     }
 
     @DeleteMapping("/conference/{cid}")
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(code = HttpStatus.ACCEPTED)
     public ConferenceDTO deleteConference(@PathVariable int cid, HttpSession session) {
         int id = getUserId(session);
         return conferenceService.deleteConference(cid, id);
     }
 
     @GetMapping("/conference")
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(code = HttpStatus.OK)
     public List<ConferenceDTO> getAllConferences(HttpSession session) {
         int id = getUserId(session);
         return conferenceService.getAllConferences();
     }
 
     @PostMapping("/conference/{cid}")
-    @ResponseStatus(code = HttpStatus.CREATED)
+    @ResponseStatus(code = HttpStatus.OK)
     public ConferenceDTO viewConference(@PathVariable int cid, HttpSession session) {
         int id = getUserId(session);
         return conferenceService.viewConference(id);
