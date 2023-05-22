@@ -19,22 +19,22 @@ public class ConferenceController extends AbstractController {
 
     @PostMapping("/conference")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public ConferenceDTO publishConference(@RequestBody ConferenceDTO conferenceDTO, HttpSession session) {
-        int id = getUserId(session);
+    public ConferenceDTO publishConference(@RequestBody ConferenceDTO conferenceDTO, HttpServletRequest request) {
+        int id = getLoggedUserId(request);
         return conferenceService.publishConference(conferenceDTO, id);
     }
 
     @PutMapping("/conference")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public ConferenceDTO editConference(@RequestBody ConferenceDTO conferenceDTO, HttpSession session) {
-        int id = getUserId(session);
+    public ConferenceDTO editConference(@RequestBody ConferenceDTO conferenceDTO, HttpServletRequest request) {
+        int id = getLoggedUserId(request);
         return conferenceService.editConference(conferenceDTO, id);
     }
 
     @DeleteMapping("/conference/{cid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public ConferenceDTO deleteConference(@PathVariable int cid, HttpSession session) {
-        int id = getUserId(session);
+    public ConferenceDTO deleteConference(@PathVariable int cid, HttpServletRequest request) {
+        int id = getLoggedUserId(request);
         return conferenceService.deleteConference(cid, id);
     }
 
@@ -46,14 +46,14 @@ public class ConferenceController extends AbstractController {
 
     @PostMapping("/conference/{cid}")
     @ResponseStatus(code = HttpStatus.OK)
-    public ConferenceDTO viewConference(@PathVariable int cid, HttpSession session) {
-        int id = getUserId(session);
+    public ConferenceDTO viewConference(@PathVariable int cid, HttpServletRequest request) {
+        int id = getLoggedUserId(request);
         return conferenceService.viewConference(id);
     }
 
     @PutMapping("/conference/book")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto, HttpServletRequest request){
+    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto, HttpServletRequest request) {
         //TODO check if user is conference owner
         getLoggedUserId(request);
         return conferenceService.assignConferenceToHall(dto);

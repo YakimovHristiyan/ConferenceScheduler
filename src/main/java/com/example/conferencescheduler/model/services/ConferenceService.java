@@ -65,8 +65,8 @@ public class ConferenceService extends MasterService {
         Conference conference = conferenceRepository.findByConferenceId(dto.getConferenceId())
                 .orElseThrow(() -> new NotFoundException("This conference does not exist."));
         List<Session> hallSession = hall.getSessions();
-        for(Session s : hallSession){
-            if (s.getStartDate().isEqual(dto.getConferenceStartDate())){
+        for (Session s : hallSession) {
+            if (s.getStartDate().isEqual(dto.getConferenceStartDate())) {
                 throw new BadRequestException("Time is not available.");
             }
         }

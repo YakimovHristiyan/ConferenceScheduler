@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
+
 public abstract class AbstractController {
 
     public static final String LOGGED = "LOGGED";
@@ -52,7 +53,7 @@ public abstract class AbstractController {
     }
 
 
-    private ExceptionDTO buildExceptionDtoInfo(Exception exception, HttpStatus status){
+    private ExceptionDTO buildExceptionDtoInfo(Exception exception, HttpStatus status) {
         ExceptionDTO exceptionDTO = new ExceptionDTO();
         exceptionDTO.setDateTime(LocalDateTime.now());
         exceptionDTO.setMsg(exception.getMessage());
@@ -67,15 +68,15 @@ public abstract class AbstractController {
         return (int) session.getAttribute(USER_ID);
     }
 
-    public void logUser(HttpServletRequest request, int id){
+    public void logUser(HttpServletRequest request, int id) {
         HttpSession session = request.getSession();
         session.setAttribute(LOGGED, true);
         session.setAttribute(USER_ID, id);
         session.setAttribute(REMOTE_IP, request.getRemoteAddr());
-        session.setMaxInactiveInterval(30*60);
+        session.setMaxInactiveInterval(30 * 60);
     }
 
-    public int getLoggedUserId(HttpServletRequest request){
+    public int getLoggedUserId(HttpServletRequest request) {
         HttpSession session = request.getSession();
         String ip = request.getRemoteAddr();
         System.out.println(session.getAttribute(LOGGED));
@@ -83,7 +84,7 @@ public abstract class AbstractController {
         if (session.isNew() ||
                 session.getAttribute(LOGGED) == null ||
                 (!(boolean) session.getAttribute(LOGGED)) ||
-                !session.getAttribute(REMOTE_IP).equals(ip)){
+                !session.getAttribute(REMOTE_IP).equals(ip)) {
             throw new UnauthorizedException("You are not logged!");
         }
         return (int) session.getAttribute(USER_ID);

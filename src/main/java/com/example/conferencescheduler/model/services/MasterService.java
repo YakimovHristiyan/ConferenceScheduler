@@ -151,6 +151,6 @@ public abstract class MasterService {
     }
 
     protected Hall getHallById(int hallId) {
-        return  hallRepository.findById(hallId).orElseThrow(() -> new NotFoundException("Hall does not exist!"));
+        return hallRepository.findById(hallId).orElseThrow(() -> new NotFoundException("Hall does not exist!"));
     }
 }

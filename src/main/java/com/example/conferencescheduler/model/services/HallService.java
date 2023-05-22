@@ -72,7 +72,7 @@ public class HallService extends MasterService {
         HallDTO hallDTO = new HallDTO();
         for (Session s : sessions) {
             LocalTime time = s.getStartDate().toLocalTime();
-            if (dtos.contains(hallDTO)){
+            if (dtos.contains(hallDTO)) {
                 int index = dtos.indexOf(hallDTO);
                 HallDTO hall = dtos.get(index);
                 hall.getTimes().remove(time);
@@ -82,8 +82,9 @@ public class HallService extends MasterService {
             hallDTO = modelMapper.map(s.getHall(), HallDTO.class);
             hallDTO.getTimes().remove(time);
             dtos.add(hallDTO);
-        };
-        if (dtos.isEmpty()){
+        }
+        ;
+        if (dtos.isEmpty()) {
             return hallRepository.findAll()
                     .stream()
                     .map(hall -> modelMapper.map(hall, HallDTO.class))
