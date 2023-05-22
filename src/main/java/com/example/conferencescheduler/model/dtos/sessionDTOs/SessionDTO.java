@@ -11,10 +11,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class SessionDTO {
 
-    private int sessionId;
+    private int conferenceId;
     private String name;
     private String description;
     private LocalDateTime startDate;
-    private LocalDateTime endDate;
     private Integer hallId;
 }

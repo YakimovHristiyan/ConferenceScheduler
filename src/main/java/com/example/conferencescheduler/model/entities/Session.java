@@ -1,5 +1,8 @@
 package com.example.conferencescheduler.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -19,24 +22,24 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int sessionId;
 
-    @Column(name = "name", nullable = false)
+    @Column
     private String name;
 
-    @Column(name = "description", nullable = false)
+    @Column
     private String description;
 
-    @Column(name = "startDate", nullable = false)
+    @Column
     private LocalDateTime startDate;
 
-    @Column(name = "endDate", nullable = false)
+    @Column
     private LocalDateTime endDate;
 
     @ManyToOne
-    @JoinColumn(name = "hall_id", nullable = false)
+    @JoinColumn(name = "hall_id")
     private Hall hall;
 
     @ManyToOne
-    @JoinColumn(name = "conference_id", nullable = false)
+    @JoinColumn(name = "conference_id")
     private Conference conference;
 
     @ManyToMany
@@ -45,5 +48,6 @@ public class Session {
             joinColumns = @JoinColumn(name = "session_id"),
             inverseJoinColumns = @JoinColumn(name = "guest_id")
     )
+    @JsonIgnore
     private List<User> guests;
 }

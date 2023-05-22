@@ -18,4 +18,5 @@ public class ConferenceDTO {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private int ownerId;
+
 }

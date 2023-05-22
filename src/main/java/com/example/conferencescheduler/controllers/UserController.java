@@ -1,9 +1,6 @@
 package com.example.conferencescheduler.controllers;
 
-import com.example.conferencescheduler.model.dtos.userDTOs.EditUserDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
+import com.example.conferencescheduler.model.dtos.userDTOs.*;
 import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.services.UserService;
@@ -64,11 +61,11 @@ public class UserController extends AbstractController{
         return userService.verifyEmail(uid);
     }
 
-//    @PutMapping("/users/attendance")
-//    @ResponseStatus(code = HttpStatus.ACCEPTED)
-//    public List<Session> assertAttendance(HttpServletRequest request, int conferenceId, int sessionId){
-//        int userId = getLoggedUserId(request);
-//        return userService.assertAttendance(userId, conferenceId, sessionId);
-//    }
+    @PutMapping("/users/attendance")
+    @ResponseStatus(code = HttpStatus.OK)
+    public UserWithSessionDTO assertAttendance(@RequestBody AttendanceDTO attendanceDTO, HttpServletRequest request){
+        int userId = getLoggedUserId(request);
+        return userService.assertAttendance(userId, attendanceDTO);
+    }
 
 }
