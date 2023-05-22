@@ -53,8 +53,8 @@ public class UserController extends AbstractController {
 
     @PutMapping("/users")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public ResponseEntity<EditUserDTO> editAccount(@RequestBody EditUserDTO newUser, HttpServletRequest request) {
-        int userId = getLoggedUserId(request);
+    public ResponseEntity<EditUserDTO> editAccount(@RequestBody EditUserDTO newUser, HttpSession session) {
+        int userId = getUserId(session);
         return ResponseEntity.ok(userService.editAccount(newUser, userId));
     }
 
@@ -65,8 +65,8 @@ public class UserController extends AbstractController {
 
     @PutMapping("/users/attendance")
     @ResponseStatus(code = HttpStatus.OK)
-    public UserWithSessionDTO assertAttendance(@RequestBody AttendanceDTO attendanceDTO, HttpServletRequest request) {
-        int userId = getLoggedUserId(request);
+    public UserWithSessionDTO assertAttendance(@RequestBody AttendanceDTO attendanceDTO, HttpSession session){
+        int userId = getUserId(session);
         return userService.assertAttendance(userId, attendanceDTO);
     }
 

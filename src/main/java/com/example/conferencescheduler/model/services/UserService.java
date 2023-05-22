@@ -104,6 +104,7 @@ public class UserService extends MasterService {
         if (user.getSessions().contains(session)) {
             throw new BadRequestException("You are already guest for this session.");
         }
+
             /*
            5.Can not mark colliding sessions in more than one hall
            - iterate over all session in the list and check if
@@ -125,10 +126,24 @@ public class UserService extends MasterService {
                     if (!wantedSessionStartDate.isAfter(currentSessionEndDate)
                             && !wantedSessionEndDate.isBefore(currentSessionStartDate)) {
                         hasColliding = true;
-                        break;
+                        break;           
                     }
                 }
             }
+            System.out.println(hasColliding);
+            if (hasColliding) {
+                throw new BadRequestException("Current session is colliding with other session in your list.");
+            } else {
+                if (session.getGuests().size() == session.getHall().getCapacity()) {
+                    throw new BadRequestException("There is no more free seat in the hall.");
+                } else {
+                    user.getSessions().add(session);
+                    session.getGuests().add(user);
+                    userRepository.save(user);
+                    sessionRepository.save(session);
+                }
+            }
+
         }
         System.out.println(hasColliding);
         if (hasColliding) {

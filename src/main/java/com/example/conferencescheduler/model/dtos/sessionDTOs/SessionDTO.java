@@ -15,5 +15,6 @@ public class SessionDTO {
     private String name;
     private String description;
     private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private Integer hallId;
 }

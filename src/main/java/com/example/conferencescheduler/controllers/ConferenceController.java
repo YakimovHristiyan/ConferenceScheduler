@@ -53,9 +53,8 @@ public class ConferenceController extends AbstractController {
 
     @PutMapping("/conference/book")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto, HttpServletRequest request) {
+    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto){
         //TODO check if user is conference owner
-        getLoggedUserId(request);
         return conferenceService.assignConferenceToHall(dto);
     }
 

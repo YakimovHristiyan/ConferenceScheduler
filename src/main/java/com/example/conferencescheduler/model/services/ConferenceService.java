@@ -20,10 +20,12 @@ import java.util.stream.Collectors;
 public class ConferenceService extends MasterService {
 
     public ConferenceDTO publishConference(ConferenceDTO conferenceDTO, int userId) {
-        if (getUserById(userId).getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE) {
+        User user = getUserById(userId);
+        if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE) {
             throw new UnauthorizedException("You do not have permission to publish conferences!");
         }
         Conference conference = modelMapper.map(conferenceDTO, Conference.class);
+        conference.setOwner(user);
         conferenceRepository.save(conference);
         return modelMapper.map(conference, ConferenceDTO.class);
     }

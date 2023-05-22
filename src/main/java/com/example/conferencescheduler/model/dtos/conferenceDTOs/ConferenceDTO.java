@@ -16,7 +16,6 @@ public class ConferenceDTO {
     private String description;
     private String address;
     private LocalDateTime startDate;
-    private LocalDateTime endDate;
     private int ownerId;
 
 }

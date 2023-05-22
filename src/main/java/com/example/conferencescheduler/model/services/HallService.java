@@ -8,6 +8,7 @@ import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.entities.User;
+import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
@@ -91,5 +92,14 @@ public class HallService extends MasterService {
                     .toList();
         }
         return dtos;
+    }
+
+    public List<CreateHallDTO> getAllConferenceHalls(int hid) {
+        Conference conference = conferenceRepository.findByConferenceId(hid)
+                .orElseThrow(() -> new NotFoundException("Conference not found."));
+        return conference.getHalls()
+                .stream()
+                .map(hall ->modelMapper.map(hall, CreateHallDTO.class))
+                .toList();
     }
 }
