@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 public abstract class AbstractController {
 
-    public static final String LOGGED = "LOGGED";
-    public static final String USER_ID = "USER_ID";
-    public static final String REMOTE_IP = "REMOTE_IP";
+    public static final String LOGGED = "logged";
+    public static final String USER_ID = "user_id";
+    public static final String REMOTE_IP = "remote_ip";
 
     @ExceptionHandler(value = BadRequestException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
@@ -75,17 +75,4 @@ public abstract class AbstractController {
         session.setMaxInactiveInterval(30*60);
     }
 
-    public int getLoggedUserId(HttpServletRequest request){
-        HttpSession session = request.getSession();
-        String ip = request.getRemoteAddr();
-        System.out.println(session.getAttribute(LOGGED));
-        System.out.println(session.getAttribute(USER_ID));
-        if (session.isNew() ||
-                session.getAttribute(LOGGED) == null ||
-                (!(boolean) session.getAttribute(LOGGED)) ||
-                !session.getAttribute(REMOTE_IP).equals(ip)){
-            throw new UnauthorizedException("You are not logged!");
-        }
-        return (int) session.getAttribute(USER_ID);
-    }
 }
