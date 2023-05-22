@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class SessionController extends AbstractController{
 
@@ -24,6 +26,12 @@ public class SessionController extends AbstractController{
     public SessionDTO deleteSession(@PathVariable int sid, HttpSession httpSession){
         int userId = getUserId(httpSession);
         return sessionService.deleteSession(userId, sid);
+    }
+
+    @GetMapping("/session/all-conference-sessions/{cid}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<SessionDTO> getConferenceAllSessions(@PathVariable int cid){
+        return sessionService.getConferenceAllSessions(cid);
     }
 
 }

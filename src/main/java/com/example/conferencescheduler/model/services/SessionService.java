@@ -1,5 +1,6 @@
 package com.example.conferencescheduler.model.services;
 
+import com.example.conferencescheduler.model.dtos.hallDTOs.CreateHallDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Session;
@@ -7,6 +8,8 @@ import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class SessionService extends MasterService {
@@ -41,4 +44,12 @@ public class SessionService extends MasterService {
     }
 
 
+    public List<SessionDTO> getConferenceAllSessions(int cid) {
+        Conference conference = conferenceRepository.findByConferenceId(cid)
+                .orElseThrow(() -> new NotFoundException("Conference not found."));
+        return conference.getSessions()
+                .stream()
+                .map(session ->modelMapper.map(session, SessionDTO.class))
+                .toList();
+    }
 }
