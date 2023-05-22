@@ -1,16 +1,21 @@
 package com.example.conferencescheduler.model.services;
 
+import com.example.conferencescheduler.model.dtos.hallDTOs.CreateHallDTO;
+import com.example.conferencescheduler.model.dtos.hallDTOs.HallWithSessionsDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.entities.Conference;
+import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class SessionService extends MasterService {
-    public SessionDTO addSession(SessionDTO sessionDTO, int userId, int conferenceId) {
+    public SessionDTO addSession(SessionDTO sessionDTO, int userId) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = getUserById(userId);
         Conference conference = getConferenceById(conferenceId);
@@ -21,6 +26,7 @@ public class SessionService extends MasterService {
         sessionRepository.save(session);
         conference.setEndDate(conference.getStartDate().plusMinutes(60));
         conferenceRepository.save(conference);
+        addSessionToHall(session.getSessionId(), sessionDTO.getHallId());
         return modelMapper.map(session, SessionDTO.class);
     }
 
@@ -42,4 +48,20 @@ public class SessionService extends MasterService {
         }
     }
 
+
+    public List<SessionDTO> getConferenceAllSessions(int cid) {
+        Conference conference = conferenceRepository.findByConferenceId(cid)
+                .orElseThrow(() -> new NotFoundException("Conference not found."));
+        return conference.getSessions()
+                .stream()
+                .map(session ->modelMapper.map(session, SessionDTO.class))
+                .toList();
+    }
+
+    private void addSessionToHall(int sid, int hid) {
+        Session session = getSessionById(sid);
+        Hall hall = getHallById(hid);
+        hall.getSessions().add(session);
+        hallRepository.save(hall);
+    }
 }

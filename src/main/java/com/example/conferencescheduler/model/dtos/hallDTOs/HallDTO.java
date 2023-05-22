@@ -16,7 +16,6 @@ public class HallDTO {
     private int hallId;
     private String hallName;
     private Integer capacity;
-    private Integer conferenceId;
     private List<LocalTime> times = getAllTimeSlots();
 
     private List<LocalTime> getAllTimeSlots() {

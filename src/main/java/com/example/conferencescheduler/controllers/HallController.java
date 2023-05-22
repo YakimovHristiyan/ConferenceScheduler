@@ -51,5 +51,13 @@ public class HallController extends AbstractController {
         return hallService.getAvailableTimeSlots(dto);
     }
 
+    @GetMapping("/hall/all-halls/{cid}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<CreateHallDTO> getAllConferenceHalls(@PathVariable int cid){
+        return hallService.getAllConferenceHalls(cid);
+    }
+
+
+
 
 }
