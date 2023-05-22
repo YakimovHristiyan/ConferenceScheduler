@@ -18,9 +18,8 @@ public class SessionService extends MasterService {
     public SessionDTO addSession(SessionDTO sessionDTO, int userId) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = getUserById(userId);
-        Conference conference = conferenceRepository.findByConferenceId(sessionDTO.getConferenceId())
-                .orElseThrow(() -> new NotFoundException("Conference not found."));
-        validateCanOwnerRights(conference, user);
+        Conference conference = getConferenceById(conferenceId);
+        validateOwnerRights(conference, user);
         Session session = modelMapper.map(sessionDTO, Session.class);
         //Todo check if the hour is free to add this session
         session.setEndDate(session.getStartDate().plusMinutes(60));
@@ -35,14 +34,16 @@ public class SessionService extends MasterService {
         User user = getUserById(userId);
         Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new NotFoundException("Session not found!"));
         Conference conference = getConferenceById(session.getConference().getConferenceId());
-        validateCanOwnerRights(conference, user);
+
+        validateOwnerRights(conference, user);
+  
         //Todo Notify all guests that the session is removed
         sessionRepository.delete(session);
         return modelMapper.map(session, SessionDTO.class);
     }
 
-    public void validateCanOwnerRights(Conference conference, User user){
-        if (conference.getOwner().getUserId() != user.getUserId()){
+    public void validateOwnerRights(Conference conference, User user) {
+        if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE || conference.getOwner().getUserId() != user.getUserId()){
             throw new UnauthorizedException("You are not owner of this conference!");
         }
     }
