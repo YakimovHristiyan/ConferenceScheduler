@@ -58,9 +58,9 @@ public class UserService extends MasterService {
         if (user.isPresent()) {
             User u = user.get();
             if (encoder.matches(password, u.getPassword())) {
-                if (u.isVerified()){
+                if (u.isVerified()) {
                     return modelMapper.map(user.get(), UserWithoutPassDTO.class);
-                }else {
+                } else {
                     throw new UnauthorizedException("Your account is not verified");
                 }
             } else {
@@ -104,17 +104,17 @@ public class UserService extends MasterService {
                 .orElseThrow(() -> new NotFoundException("User not found."));
         //2.Get Conference by id
         Conference conference = conferenceRepository.findById(attendanceDTO.getConferenceId())
-                .orElseThrow(()->new NotFoundException("Conference not found."));
+                .orElseThrow(() -> new NotFoundException("Conference not found."));
         //3.Get session by id
         Session session = sessionRepository.findBySessionId(attendanceDTO.getSessionId())
-                .orElseThrow(()-> new NotFoundException("Session not found."));
-        if (session == null){
+                .orElseThrow(() -> new NotFoundException("Session not found."));
+        if (session == null) {
             throw new BadRequestException("Session not found.");
         }
         //4.Check if already this user is going on this conference
-        if (user.getSessions().contains(session)){
+        if (user.getSessions().contains(session)) {
             throw new BadRequestException("You are already guest for this session.");
-        }else {
+        } else {
             /*
            5.Can not mark colliding sessions in more than one hall
            - iterate over all session in the list and check if
@@ -124,38 +124,38 @@ public class UserService extends MasterService {
             LocalDateTime wantedSessionStartDate = session.getStartDate();
             LocalDateTime wantedSessionEndDate = session.getEndDate();
             boolean hasColliding = false;
-            if (user.getSessions().isEmpty()){
-                if (session.getGuests().size() == session.getHall().getCapacity()){
+            if (user.getSessions().isEmpty()) {
+                if (session.getGuests().size() == session.getHall().getCapacity()) {
                     throw new BadRequestException("There is no more free seat in the hall.");
-                }else {
+                } else {
                     user.getSessions().add(session);
                     session.getGuests().add(user);
                     userRepository.save(user);
                     sessionRepository.save(session);
                     return modelMapper.map(user, UserWithSessionDTO.class);
                 }
-            }else {
+            } else {
                 for (Session s : user.getSessions()) {
                     LocalDateTime currentSessionStartDate = s.getStartDate();
                     LocalDateTime currentSessionEndDate = s.getEndDate();
                     Hall hall = s.getHall();
-                    if (session.getHall().getHallId() != hall.getHallId()){
+                    if (session.getHall().getHallId() != hall.getHallId()) {
                         if (!wantedSessionStartDate.isAfter(currentSessionEndDate)
-                                && !wantedSessionEndDate.isBefore(currentSessionStartDate))
-                        {
+                                && !wantedSessionEndDate.isBefore(currentSessionStartDate)) {
                             hasColliding = true;
                             break;
                         }
                     }
                 }
+
             }
             System.out.println(hasColliding);
-            if (hasColliding){
+            if (hasColliding) {
                 throw new BadRequestException("Current session is colliding with other session in your list.");
-            }else {
-                if (session.getGuests().size() == session.getHall().getCapacity()){
+            } else {
+                if (session.getGuests().size() == session.getHall().getCapacity()) {
                     throw new BadRequestException("There is no more free seat in the hall.");
-                }else {
+                } else {
                     user.getSessions().add(session);
                     session.getGuests().add(user);
                     userRepository.save(user);
