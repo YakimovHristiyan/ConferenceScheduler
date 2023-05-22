@@ -1,4 +1,5 @@
 package com.example.conferencescheduler.model.repositories;
+import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.Session;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

@@ -17,7 +17,7 @@ public class SessionController extends AbstractController {
     @Autowired
     private SessionService sessionService;
 
-    @PostMapping("/session")
+    @PutMapping("/session")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public SessionDTO addSession(@RequestBody SessionDTO sessionDTO, HttpSession httpSession){
         int userId = getUserId(httpSession);
