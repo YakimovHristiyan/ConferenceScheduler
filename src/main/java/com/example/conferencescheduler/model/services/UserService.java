@@ -98,6 +98,7 @@ public class UserService extends MasterService {
         return "Your account is now verified.";
     }
 
+    @Transactional
     public UserWithSessionDTO assertAttendance(int userId, AttendanceDTO attendanceDTO) {
         //1.Get User by id
         User user = userRepository.findById(userId)
