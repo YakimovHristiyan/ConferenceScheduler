@@ -18,11 +18,12 @@ import java.util.List;
 public class SessionService extends MasterService {
 
     @Transactional
-    public SessionDTO addSession(SessionDTO dto, int userId) {
+    public SessionDTO addSession(SessionDTO sessionDTO, int userId) {
+
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = getUserById(userId);
-        Hall hall = getHallById(dto.getHallId());
-        Conference conference = getConferenceById(dto.getConferenceId());
+        Conference conference = getConferenceById(sessionDTO.getConferenceId());
+  
         validateOwnerRights(conference, user);
         System.out.println(dto.getBookedHours());
         Session session = Session.builder()

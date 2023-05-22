@@ -26,8 +26,8 @@ public class SessionController extends AbstractController {
 
     @DeleteMapping("/session/{sid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public SessionDTO deleteSession(@PathVariable int sid, HttpServletRequest request) {
-        int userId = getLoggedUserId(request);
+    public SessionDTO deleteSession(@PathVariable int sid, HttpSession session) {
+        int userId = getUserId(session);
         return sessionService.deleteSession(userId, sid);
     }
 

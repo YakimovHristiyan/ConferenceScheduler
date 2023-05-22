@@ -29,8 +29,8 @@ public class SpeakerController extends AbstractController {
     }
 
     @PutMapping("/speakers/image")
-    public void changeProfileImage(@RequestParam(value = "image") MultipartFile image, HttpServletRequest request) {
-        int uid = getLoggedUserId(request);
+    public void changeProfileImage(@RequestParam(value = "image") MultipartFile image, HttpSession session) {
+        int uid = getUserId(session);
         speakerService.changeProfileImage(uid, image);
     }
 

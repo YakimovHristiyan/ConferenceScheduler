@@ -44,9 +44,9 @@ public class HallService extends MasterService {
         return modelMapper.map(hall, HallDTO.class);
     }
 
-    public void validateConferenceOwner(Conference conference, User user) {
+    private void validateConferenceOwner(Conference conference, User user) {
         if (conference.getOwner().getUserId() != user.getUserId()) {
-            throw new UnauthorizedException("You can not add halls to conferences you are not owner!");
+            throw new UnauthorizedException("You are not owner of this conference!");
         }
     }
 
