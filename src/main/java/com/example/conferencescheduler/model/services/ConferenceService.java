@@ -44,7 +44,7 @@ public class ConferenceService extends MasterService {
         if (user.getUserId() != conference.getOwner().getUserId()) {
             throw new UnauthorizedException("You can not delete other owners conferences!");
         }
-        //Todo Delete all sessions for this conference
+        // Todo Delete all sessions for this conference
         conferenceRepository.delete(conference);
         return modelMapper.map(conference, ConferenceDTO.class);
     }
