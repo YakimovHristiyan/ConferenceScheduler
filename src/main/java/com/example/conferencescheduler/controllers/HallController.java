@@ -5,6 +5,7 @@ import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
 import com.example.conferencescheduler.model.dtos.hallDTOs.HallDTO;
 import com.example.conferencescheduler.model.dtos.hallDTOs.HallWithSessionsDTO;
 import com.example.conferencescheduler.model.services.HallService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,34 +21,34 @@ public class HallController extends AbstractController {
 
     @PostMapping("/hall/{cid}/{hid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public HallDTO addHallToConference(@PathVariable int cid, @PathVariable int hid, HttpSession session) {
-        int userId = getUserId(session);
+    public HallDTO addHallToConference(@PathVariable int cid, @PathVariable int hid, HttpServletRequest request) {
+        int userId = getLoggedUserId(request);
         return hallService.addHallToConference(userId, hid, cid);
     }
 
     @DeleteMapping("/hall/{cid}/{hid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public HallDTO removeHallFromConference(@PathVariable int cid, @PathVariable int hid, HttpSession session) {
-        int userId = getUserId(session);
+    public HallDTO removeHallFromConference(@PathVariable int cid, @PathVariable int hid, HttpServletRequest request) {
+        int userId = getLoggedUserId(request);
         return hallService.removeHallFromConference(userId, hid, cid);
     }
 
     @PostMapping("/hall")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public HallDTO createHall(@RequestBody CreateHallDTO hall, HttpSession session){
-        int userId = getUserId(session);
+    public HallDTO createHall(@RequestBody CreateHallDTO hall, HttpServletRequest request) {
+        int userId = getLoggedUserId(request);
         return hallService.createHall(hall, userId);
     }
 
     @GetMapping("/hall/{hid}")
     @ResponseStatus(code = HttpStatus.OK)
-    public HallWithSessionsDTO viewHall(@PathVariable int hid){
+    public HallWithSessionsDTO viewHall(@PathVariable int hid) {
         return hallService.viewHall(hid);
     }
 
     @GetMapping("/hall/free-halls-slots")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<HallDTO> getAvailableTimeSlots(@RequestBody DateDTO dto){
+    public List<HallDTO> getAvailableTimeSlots(@RequestBody DateDTO dto) {
         return hallService.getAvailableTimeSlots(dto);
     }
 

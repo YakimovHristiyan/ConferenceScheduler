@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-public class SpeakerController extends AbstractController{
+public class SpeakerController extends AbstractController {
 
     @Autowired
     private SpeakerService speakerService;
@@ -24,13 +24,13 @@ public class SpeakerController extends AbstractController{
 
     @PostMapping("/speakers")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public UserWithoutPassDTO register(@RequestBody SpeakerRegisterDTO dto){
+    public UserWithoutPassDTO register(@RequestBody SpeakerRegisterDTO dto) {
         return speakerService.register(dto);
     }
 
     @PutMapping("/speakers/image")
-    public void changeProfileImage(@RequestParam(value = "image") MultipartFile image, HttpSession session) {
-        int uid = getUserId(session);
+    public void changeProfileImage(@RequestParam(value = "image") MultipartFile image, HttpServletRequest request) {
+        int uid = getLoggedUserId(request);
         speakerService.changeProfileImage(uid, image);
     }
 

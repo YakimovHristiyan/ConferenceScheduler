@@ -10,12 +10,16 @@ import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class SessionService extends MasterService {
-    public SessionDTO addSession(SessionDTO sessionDTO, int userId) {
+
+    @Transactional
+    public SessionDTO addSession(SessionDTO sessionDTO, int userId, int conferenceId) {
+
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = getUserById(userId);
         Conference conference = getConferenceById(conferenceId);
