@@ -32,7 +32,6 @@ public class ConferenceService extends MasterService {
         return modelMapper.map(conference, ConferenceDTO.class);
     }
 
-
     public EditConferenceDTO editConference(EditConferenceDTO dto, int userId, int confId) {
         Conference conference = getConferenceById(confId);
         if (userId != conference.getOwner().getUserId()) {
