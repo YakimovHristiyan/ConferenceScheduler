@@ -3,10 +3,7 @@ package com.example.conferencescheduler.model.services;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
-import com.example.conferencescheduler.model.entities.Conference;
-import com.example.conferencescheduler.model.entities.Hall;
-import com.example.conferencescheduler.model.entities.Session;
-import com.example.conferencescheduler.model.entities.User;
+import com.example.conferencescheduler.model.entities.*;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
@@ -21,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,7 +49,7 @@ public abstract class MasterService {
     @Autowired
     protected UserRoleRepository userRoleRepository;
 
-    protected void validateUserInformation(UserRegisterDTO dto) {
+    private void validateUserInformation(UserRegisterDTO dto) {
         if (userRepository.findByPhone(dto.getPhone()).isPresent()) {
             throw new BadRequestException("The phone number exist!");
         }
@@ -133,6 +131,21 @@ public abstract class MasterService {
             return ""; // empty extension
         }
         return name.substring(lastIndexOf);
+    }
+
+    protected User generateUserObject(UserRegisterDTO dto, int roleId) {
+        validateUserInformation(dto);
+        UserRole userRole = userRoleRepository.findByRoleId(roleId);
+        System.out.println(dto.getRoleId());
+        return User.builder()
+                .firstName(dto.getFirstName())
+                .lastName(dto.getLastName())
+                .phone(dto.getPhone())
+                .email(dto.getEmail())
+                .userRole(userRole)
+                .password(encoder.encode(dto.getPassword()))
+                .registerAt(LocalDateTime.now())
+                .build();
     }
 
     protected boolean validatePassword(String password) {
