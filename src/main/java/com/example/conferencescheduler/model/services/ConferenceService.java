@@ -74,4 +74,5 @@ public class ConferenceService extends MasterService {
                 .map(session -> modelMapper.map(session, SessionDTO.class))
                 .toList();
     }
+  
 }
