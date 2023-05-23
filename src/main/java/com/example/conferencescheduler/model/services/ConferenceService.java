@@ -2,6 +2,7 @@ package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
@@ -32,13 +33,17 @@ public class ConferenceService extends MasterService {
     }
 
 
-    public ConferenceDTO editConference(ConferenceDTO conferenceDTO, int userId) {
-        if (userId != conferenceDTO.getOwnerId()) {
+    public EditConferenceDTO editConference(EditConferenceDTO dto, int userId, int confId) {
+        Conference conference = getConferenceById(confId);
+        if (userId != conference.getOwner().getUserId()) {
             throw new UnauthorizedException("You do not have permission to edit this conference!");
         }
-        Conference conference = modelMapper.map(conferenceDTO, Conference.class);
+        conference.setConferenceName(dto.getConferenceName());
+        conference.setDescription(dto.getDescription());
+        conference.setAddress(dto.getAddress());
+        conference.setStartDate(dto.getStartDate());
         conferenceRepository.save(conference);
-        return modelMapper.map(conference, ConferenceDTO.class);
+        return modelMapper.map(conference, EditConferenceDTO.class);
     }
 
     public ConferenceDTO deleteConference(int conferenceId, int userId) {
@@ -59,27 +64,6 @@ public class ConferenceService extends MasterService {
 
     public ConferenceDTO viewConference(int id) {
         return modelMapper.map(getConferenceById(id), ConferenceDTO.class);
-    }
-
-    @Transactional
-    public AssignConferenceDTO assignConferenceToHall(AssignConferenceDTO dto) {
-        Hall hall = hallRepository.findByHallId(dto.getHallId())
-                .orElseThrow(() -> new NotFoundException("This hall does not exist."));
-        Conference conference = conferenceRepository.findByConferenceId(dto.getConferenceId())
-                .orElseThrow(() -> new NotFoundException("This conference does not exist."));
-        List<Session> hallSession = hall.getSessions();
-        for (Session s : hallSession) {
-            if (s.getStartDate().isEqual(dto.getConferenceStartDate())) {
-                throw new BadRequestException("Time is not available.");
-            }
-        }
-        //4. Add conference to the hall
-        hall.getConferences().add(conference);
-        conference.getHalls().add(hall);
-        conference.setStartDate(dto.getConferenceStartDate());
-        conferenceRepository.save(conference);
-        hallRepository.save(hall);
-        return dto;
     }
 
     public List<SessionDTO> getConferenceAllSessions(int cid) {

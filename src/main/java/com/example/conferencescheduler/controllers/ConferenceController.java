@@ -2,6 +2,7 @@ package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.services.ConferenceService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,14 +26,14 @@ public class ConferenceController extends AbstractController {
         return conferenceService.publishConference(conferenceDTO, id);
     }
 
-    @PutMapping("/conference")
+    @PutMapping("/conference/{confid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public ConferenceDTO editConference(@RequestBody ConferenceDTO conferenceDTO, HttpSession session) {
+    public EditConferenceDTO editConference(@PathVariable int confid, @RequestBody EditConferenceDTO dto, HttpSession session) {
         int id = getUserId(session);
-        return conferenceService.editConference(conferenceDTO, id);
+        return conferenceService.editConference(dto, id, confid);
     }
 
-    @DeleteMapping("/conference/{cid}")
+    @DeleteMapping("/conference/{cid}")//TODO This can be done only from admin, to be moved in admin controller
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public ConferenceDTO deleteConference(@PathVariable int cid, HttpSession session) {
         int id = getUserId(session);
@@ -45,18 +46,10 @@ public class ConferenceController extends AbstractController {
         return conferenceService.getAllConferences();
     }
 
-    @PostMapping("/conference/{cid}")
+    @GetMapping("/conference/{cid}")
     @ResponseStatus(code = HttpStatus.OK)
-    public ConferenceDTO viewConference(@PathVariable int cid, HttpSession session) {
-        int id = getUserId(session);
-        return conferenceService.viewConference(id);
-    }
-
-    @PutMapping("/conference/book")
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto){
-        //TODO check if user is conference owner
-        return conferenceService.assignConferenceToHall(dto);
+    public ConferenceDTO viewConference(@PathVariable int cid) {
+        return conferenceService.viewConference(cid);
     }
 
     @GetMapping("/session/all-conference-sessions/{cid}")
@@ -64,6 +57,5 @@ public class ConferenceController extends AbstractController {
     public List<SessionDTO> getConferenceAllSessions(@PathVariable int cid){
         return conferenceService.getConferenceAllSessions(cid);
     }
-
 
 }
