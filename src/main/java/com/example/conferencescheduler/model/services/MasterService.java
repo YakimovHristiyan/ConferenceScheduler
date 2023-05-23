@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public abstract class MasterService {
     protected final static int USER_ROLE = 1;
     protected final static int SPEAKER_ROLE = 2;
-    protected final static int  CONFERENCE_OWNER_ROLE = 3;
+    protected final static int CONFERENCE_OWNER_ROLE = 3;
     protected static final String DEF_PROFILE_IMAGE_URI = "uploads" + File.separator + "def_profile_image.png"; //TODO add the folder
 
     @Autowired
@@ -124,6 +124,18 @@ public abstract class MasterService {
         }).start();
     }
 
+    protected void sendEmail(String senderMail, String email, String subject, String text) {
+        new Thread(() -> {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(senderMail);
+            message.setTo(email);
+            message.setSubject(subject);
+            message.setText(text);
+
+            emailSender.send(message);
+        }).start();
+    }
+
     protected static String getFileExtension(MultipartFile file) {
         String name = file.getOriginalFilename();
         int lastIndexOf = name.lastIndexOf(".");
@@ -168,7 +180,7 @@ public abstract class MasterService {
         return hallRepository.findById(hallId).orElseThrow(() -> new NotFoundException("Hall does not exist!"));
     }
 
-    protected Session getSessionById(int sessionId){
+    protected Session getSessionById(int sessionId) {
         return sessionRepository.findBySessionId(sessionId).orElseThrow(() -> new NotFoundException("Session not found."));
     }
 }
