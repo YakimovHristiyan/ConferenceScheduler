@@ -9,16 +9,13 @@ import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
-import com.google.api.client.util.DateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class SessionService extends MasterService {
@@ -44,9 +41,9 @@ public class SessionService extends MasterService {
         List<Session> bookedSessions = hall.getSessions();
         iterateSessionAndCheckIfTheHoursFree(bookedSessions, session);
 
-        if(conference.getEndDate().isBefore(session.getEndDate())){
-        conference.setEndDate(session.getEndDate());
-        conferenceRepository.save(conference);
+        if (conference.getEndDate().isBefore(session.getEndDate())) {
+            conference.setEndDate(session.getEndDate());
+            conferenceRepository.save(conference);
         }
 
         sessionRepository.save(session);
@@ -59,6 +56,7 @@ public class SessionService extends MasterService {
         LocalDateTime startTime = sessionWithWantedHours.getStartDate();
         LocalDateTime endTime = sessionWithWantedHours.getEndDate();
         boolean isHourFree = false;
+
         for (Session bookedSession : bookedSessions) {
             LocalDateTime startTimeOfExistingSession = bookedSession.getStartDate();
             LocalDateTime endTimeOfExistingSession = bookedSession.getEndDate();
@@ -67,7 +65,8 @@ public class SessionService extends MasterService {
                 isHourFree = true;
             }
         }
-        if(!isHourFree){
+
+        if (!isHourFree) {
             throw new BadRequestException("Time frame is not free!");
         }
     }
@@ -83,10 +82,22 @@ public class SessionService extends MasterService {
         Conference conference = getConferenceById(session.getConference().getConferenceId());
 
         validateOwnerRights(conference, user);
-
-        //Todo Notify all guests that the session is removed
+        notifyAllUsers(session, user, conference);
         sessionRepository.delete(session);
         return modelMapper.map(session, SessionDTO.class);
+    }
+
+    private void notifyAllUsers(Session session, User user, Conference conference) {
+        List<User> guests = session.getGuests();
+        String subject = "Session \"" + session.getName() + "\" is deleted";
+        String text = "Session \"" + session.getName() + "\" with starting date "
+                + session.getStartDate() + " from conference \"" + conference.getConferenceName() + "\" was deleted!\n" +
+                "You can see all other sessions with free place from this or other conferences!\n"
+                + "Sorry for the misunderstanding. Have a nice day!\n";
+
+        for (User guest : guests) {
+            sendEmail(conference.getOwner().getEmail(), guest.getEmail(), subject, text);
+        }
     }
 
     private void validateOwnerRights(Conference conference, User user) {
