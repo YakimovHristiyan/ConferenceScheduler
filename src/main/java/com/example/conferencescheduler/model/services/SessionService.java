@@ -1,7 +1,6 @@
 package com.example.conferencescheduler.model.services;
 
-import com.example.conferencescheduler.model.dtos.hallDTOs.CreateHallDTO;
-import com.example.conferencescheduler.model.dtos.hallDTOs.HallWithSessionsDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.AddedSessionDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
@@ -13,7 +12,6 @@ import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import com.google.api.client.util.DateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -26,7 +24,7 @@ import java.util.stream.Collectors;
 public class SessionService extends MasterService {
 
     @Transactional
-    public SessionDTO addSession(SessionDTO dto, int userId) {
+    public AddedSessionDTO addSession(SessionDTO dto, int userId) {
         modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = getUserById(userId);
         Conference conference = getConferenceById(dto.getConferenceId());
@@ -54,7 +52,7 @@ public class SessionService extends MasterService {
         sessionRepository.save(session);
         hall.getSessions().add(session);
         hallRepository.save(hall);
-        return dto;
+        return modelMapper.map(session, AddedSessionDTO.class);
     }
 
     private void iterateSessionAndCheckIfTheHoursFree(List<Session> bookedSessions, Session sessionWithWantedHours) {
@@ -96,16 +94,4 @@ public class SessionService extends MasterService {
             throw new UnauthorizedException("You are not owner of this conference!");
         }
     }
-
-
-    public List<SessionDTO> getConferenceAllSessions(int cid) {
-        Conference conference = conferenceRepository.findByConferenceId(cid)
-                .orElseThrow(() -> new NotFoundException("Conference not found."));
-        return conference.getSessions()
-                .stream()
-                .map(session -> modelMapper.map(session, SessionDTO.class))
-                .toList();
-    }
-
-
 }

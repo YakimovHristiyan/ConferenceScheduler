@@ -18,23 +18,9 @@ import java.util.Optional;
 @Service
 public class UserService extends MasterService {
 
-    private static final int SPEAKER_ROLE_ID = 1;
-
-
     public UserWithoutPassDTO register(UserRegisterDTO dto) {
 //        modelMapper.getConfiguration().setAmbiguityIgnored(true);
-        validateUserInformation(dto);
-        UserRole userRole = userRoleRepository.findByRoleId(dto.getRoleId());
-        System.out.println(dto.getRoleId());
-        User user = User.builder()
-                .firstName(dto.getFirstName())
-                .lastName(dto.getLastName())
-                .phone(dto.getPhone())
-                .email(dto.getEmail())
-                .userRole(userRole)
-                .password(encoder.encode(dto.getPassword()))
-                .registerAt(LocalDateTime.now())
-                .build();
+        User user = generateUserObject(dto, USER_ROLE);
         userRepository.save(user);
         sendVerificationEmail(user.getEmail(), user.getUserId());
         return modelMapper.map(user, UserWithoutPassDTO.class);
