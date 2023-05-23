@@ -48,7 +48,7 @@ public class UserController extends AbstractController {
     @ResponseStatus(code = HttpStatus.OK)
     public String logout(HttpSession session) {
         session.invalidate();
-        return "You are successfully logout!";
+        return "You have successfully logged out!";
     }
 
     @PutMapping("/users")

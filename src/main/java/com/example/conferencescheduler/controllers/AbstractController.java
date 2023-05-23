@@ -2,10 +2,7 @@ package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.ExceptionDTO;
 import com.example.conferencescheduler.model.entities.User;
-import com.example.conferencescheduler.model.exceptions.BadRequestException;
-import com.example.conferencescheduler.model.exceptions.ForbiddenException;
-import com.example.conferencescheduler.model.exceptions.NotFoundException;
-import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
+import com.example.conferencescheduler.model.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
@@ -50,6 +47,12 @@ public abstract class AbstractController {
     private ExceptionDTO otherExceptionsHandler(Exception exception) {
         exception.printStackTrace();
         return buildExceptionDtoInfo(exception, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(value = InvalidEndpointException.class)
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    public ExceptionDTO handleInvalidEndpointException(InvalidEndpointException exception) {
+        return buildExceptionDtoInfo(exception, HttpStatus.NOT_FOUND);
     }
 
 
