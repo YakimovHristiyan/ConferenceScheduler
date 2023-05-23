@@ -66,11 +66,6 @@ public class HallService extends MasterService {
         return modelMapper.map(hall, HallWithSessionsDTO.class);
     }
 
-    public List<HallDTO> viewAllFreeHallsAndSlots() {//TODO Are we need this???
-        List<Hall> halls = hallRepository.findAll();
-        return halls.stream().map(e -> modelMapper.map(e, HallDTO.class)).collect(Collectors.toList());
-    }
-
     public List<HallDTO> getAvailableTimeSlots(DateDTO dto) {
         List<HallDTO> dtos = new ArrayList<>();
         HallDTO hallDTO;

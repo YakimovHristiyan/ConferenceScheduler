@@ -46,7 +46,7 @@ public class ConferenceController extends AbstractController {
         return conferenceService.getAllConferences();
     }
 
-    @PostMapping("/conference/{cid}")
+    @GetMapping("/conference/{cid}")
     @ResponseStatus(code = HttpStatus.OK)
     public ConferenceDTO viewConference(@PathVariable int cid, HttpSession session) {
         int id = getUserId(session);

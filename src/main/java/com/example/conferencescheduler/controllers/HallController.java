@@ -19,7 +19,7 @@ public class HallController extends AbstractController {
     @Autowired
     private HallService hallService;
 
-    @PostMapping("/hall/{cid}/{hid}")
+    @PutMapping("/hall/{cid}/{hid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public HallDTO addHallToConference(@PathVariable int cid, @PathVariable int hid, HttpSession session) {
         int userId = getUserId(session);
