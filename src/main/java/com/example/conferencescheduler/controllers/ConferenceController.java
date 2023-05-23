@@ -2,6 +2,7 @@ package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.services.ConferenceService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,11 +26,11 @@ public class ConferenceController extends AbstractController {
         return conferenceService.publishConference(conferenceDTO, id);
     }
 
-    @PutMapping("/conference")
+    @PutMapping("/conference/{confid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public ConferenceDTO editConference(@RequestBody ConferenceDTO conferenceDTO, HttpSession session) {
+    public EditConferenceDTO editConference(@PathVariable int confid, @RequestBody EditConferenceDTO conferenceDTO, HttpSession session) {
         int id = getUserId(session);
-        return conferenceService.editConference(conferenceDTO, id);
+        return conferenceService.editConference(conferenceDTO, id, confid);
     }
 
     @DeleteMapping("/conference/{cid}")
