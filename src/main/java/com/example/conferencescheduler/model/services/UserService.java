@@ -38,6 +38,7 @@ public class UserService extends MasterService {
             User u = user.get();
             if (encoder.matches(password, u.getPassword())) {
                 if (u.isVerified()) {
+                    u.setLastLoginAt(LocalDateTime.now());
                     return modelMapper.map(user.get(), UserWithoutPassDTO.class);
                 } else {
                     User userToSendMail = getUserByEmail(dto.getEmail());
