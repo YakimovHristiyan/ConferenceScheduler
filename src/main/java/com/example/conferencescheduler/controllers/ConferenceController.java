@@ -52,12 +52,6 @@ public class ConferenceController extends AbstractController {
         return conferenceService.viewConference(id);
     }
 
-    @PutMapping("/conference/book")
-    @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public AssignConferenceDTO assignConferenceToHall(@RequestBody AssignConferenceDTO dto){
-        //TODO check if user is conference owner
-        return conferenceService.assignConferenceToHall(dto);
-    }
 
     @GetMapping("/session/all-conference-sessions/{cid}")
     @ResponseStatus(code = HttpStatus.OK)

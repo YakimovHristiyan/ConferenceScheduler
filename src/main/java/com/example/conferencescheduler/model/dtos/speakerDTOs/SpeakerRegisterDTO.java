@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class SpeakerRegisterDTO {
+
     private String email;
     private String firstName;
     private String lastName;
@@ -17,4 +18,5 @@ public class SpeakerRegisterDTO {
     private int roleId;
     private String profilePhoto;
     private String description;
+
 }

@@ -10,6 +10,7 @@ import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -22,6 +23,7 @@ public class HallService extends MasterService {
 
     public static final int SESSION_TIME_DURATION = 60;
 
+    @Transactional
     public HallDTO addHallToConference(int userId, int hallId, int conferenceId) {
         Conference conference = getConferenceById(conferenceId);
         User user = getUserById(userId);
@@ -30,6 +32,8 @@ public class HallService extends MasterService {
         validateConferenceOwner(conference, user);
         conference.getHalls().add(hall);
         conferenceRepository.save(conference);
+        hall.getConferences().add(conference);
+        hallRepository.save(hall);
         return modelMapper.map(hall, HallDTO.class);
     }
 

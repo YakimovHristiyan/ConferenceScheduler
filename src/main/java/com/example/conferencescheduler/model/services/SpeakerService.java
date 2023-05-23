@@ -1,14 +1,12 @@
 package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.speakerDTOs.SpeakerRegisterDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
 import com.example.conferencescheduler.model.entities.Speaker;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
-import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Service;
@@ -18,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 
 @Service
 public class SpeakerService extends MasterService {
@@ -27,15 +24,12 @@ public class SpeakerService extends MasterService {
     public UserWithoutPassDTO register(SpeakerRegisterDTO dto) {
 //        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         UserRegisterDTO userRegisterDTO = modelMapper.map(dto, UserRegisterDTO.class);
-        validateUserInformation(userRegisterDTO);
-        User user = modelMapper.map(dto, User.class);
-        user.setPassword(encoder.encode(user.getPassword()));
-        user.setRegisterAt(LocalDateTime.now());
-        user.setVerified(false);
+        User user = generateUserObject(userRegisterDTO, SPEAKER_ROLE);
         userRepository.save(user);
         sendVerificationEmail(user.getEmail(), user.getUserId());
 
         Speaker speaker = new Speaker();
+        speaker.setUser(user);
         speaker.setProfilePhoto(DEF_PROFILE_IMAGE_URI);
         speaker.setDescription(dto.getDescription());
         speakerRepository.save(speaker);
