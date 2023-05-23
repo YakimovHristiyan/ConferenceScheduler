@@ -172,6 +172,10 @@ public abstract class MasterService {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found!"));
     }
 
+    protected User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found!"));
+    }
+
     protected Conference getConferenceById(int conferenceId) {
         return conferenceRepository.findById(conferenceId).orElseThrow(() -> new NotFoundException("Conference not found!"));
     }

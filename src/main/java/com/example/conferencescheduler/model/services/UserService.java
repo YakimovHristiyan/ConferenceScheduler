@@ -40,7 +40,10 @@ public class UserService extends MasterService {
                 if (u.isVerified()) {
                     return modelMapper.map(user.get(), UserWithoutPassDTO.class);
                 } else {
-                    throw new UnauthorizedException("Your account is not verified");
+                    User userToSendMail = getUserByEmail(dto.getEmail());
+                    sendVerificationEmail(dto.getEmail(), userToSendMail.getUserId());
+                    throw new UnauthorizedException("Your account is not verified. " +
+                            "An email has been sent to your email address to confirm your registration!");
                 }
             } else {
                 throw new UnauthorizedException("Wrong credentials!");
@@ -66,9 +69,8 @@ public class UserService extends MasterService {
         return modelMapper.map(editedUser, EditUserDTO.class);
     }
 
-    public String verifyEmail(int uid) { //TODO test if this is working correctly
-        User user = userRepository.findById(uid)
-                .orElseThrow(() -> new NotFoundException("User not found."));
+    public String verifyEmail(int uid) {
+        User user = getUserById(uid);
         if (user.isVerified()) {
             throw new BadRequestException("User is already verified.");
         }
