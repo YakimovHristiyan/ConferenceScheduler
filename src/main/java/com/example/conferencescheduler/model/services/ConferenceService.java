@@ -2,6 +2,7 @@ package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.Session;
@@ -60,5 +61,34 @@ public class ConferenceService extends MasterService {
         return modelMapper.map(getConferenceById(id), ConferenceDTO.class);
     }
 
+    @Transactional
+    public AssignConferenceDTO assignConferenceToHall(AssignConferenceDTO dto) {
+        Hall hall = hallRepository.findByHallId(dto.getHallId())
+                .orElseThrow(() -> new NotFoundException("This hall does not exist."));
+        Conference conference = conferenceRepository.findByConferenceId(dto.getConferenceId())
+                .orElseThrow(() -> new NotFoundException("This conference does not exist."));
+        List<Session> hallSession = hall.getSessions();
+        for (Session s : hallSession) {
+            if (s.getStartDate().isEqual(dto.getConferenceStartDate())) {
+                throw new BadRequestException("Time is not available.");
+            }
+        }
+        //4. Add conference to the hall
+        hall.getConferences().add(conference);
+        conference.getHalls().add(hall);
+        conference.setStartDate(dto.getConferenceStartDate());
+        conferenceRepository.save(conference);
+        hallRepository.save(hall);
+        return dto;
+    }
 
+    public List<SessionDTO> getConferenceAllSessions(int cid) {
+        Conference conference = conferenceRepository.findByConferenceId(cid)
+                .orElseThrow(() -> new NotFoundException("Conference not found."));
+        return conference.getSessions()
+                .stream()
+                .map(session -> modelMapper.map(session, SessionDTO.class))
+                .toList();
+    }
+  
 }

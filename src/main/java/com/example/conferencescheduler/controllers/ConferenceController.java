@@ -2,6 +2,7 @@ package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.services.ConferenceService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -51,6 +52,12 @@ public class ConferenceController extends AbstractController {
         return conferenceService.viewConference(id);
     }
 
+
+    @GetMapping("/session/all-conference-sessions/{cid}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public List<SessionDTO> getConferenceAllSessions(@PathVariable int cid){
+        return conferenceService.getConferenceAllSessions(cid);
+    }
 
 
 }
