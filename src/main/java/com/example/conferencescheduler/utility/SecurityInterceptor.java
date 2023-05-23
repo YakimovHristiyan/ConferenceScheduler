@@ -14,6 +14,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String uri = request.getRequestURI();
         if (uri.contains("users/registration") ||
+                uri.contains("change-user-role") ||
                 uri.contains("speakers/registration") ||
                 uri.contains("email-verification") ||
                 uri.contains("auth") ||
