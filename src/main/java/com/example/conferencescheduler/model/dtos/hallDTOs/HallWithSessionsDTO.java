@@ -13,9 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HallWithSessionsDTO {
 
-    private int hallId;
     private String hallName;
     private Integer capacity;
-    private Integer conferenceId;
     private List<Session> sessions;
 }

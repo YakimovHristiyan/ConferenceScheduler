@@ -28,16 +28,9 @@ public class HallController extends AbstractController {
 
     @DeleteMapping("/hall/{cid}/{hid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public HallDTO removeHallFromConference(@PathVariable int cid, @PathVariable int hid, HttpSession session) {
+    public String removeHallFromConference(@PathVariable int cid, @PathVariable int hid, HttpSession session) {
         int userId = getUserId(session);
         return hallService.removeHallFromConference(userId, hid, cid);
-    }
-
-    @PostMapping("/hall")
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public HallDTO createHall(@RequestBody CreateHallDTO hall, HttpSession session) {
-        int userId = getUserId(session);
-        return hallService.createHall(hall, userId);
     }
 
     @GetMapping("/hall/{hid}")
@@ -57,8 +50,5 @@ public class HallController extends AbstractController {
     public List<CreateHallDTO> getAllConferenceHalls(@PathVariable int cid){
         return hallService.getAllConferenceHalls(cid);
     }
-
-
-
 
 }

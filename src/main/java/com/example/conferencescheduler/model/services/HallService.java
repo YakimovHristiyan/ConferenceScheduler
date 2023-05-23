@@ -8,6 +8,7 @@ import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.entities.User;
+import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,9 @@ public class HallService extends MasterService {
         Hall hall = getHallById(hallId);
 
         validateConferenceOwner(conference, user);
+        if (conference.getHalls().contains(hall)){
+            throw new BadRequestException("This hall is already added.");
+        }
         conference.getHalls().add(hall);
         conferenceRepository.save(conference);
         hall.getConferences().add(conference);
@@ -37,15 +41,18 @@ public class HallService extends MasterService {
         return modelMapper.map(hall, HallDTO.class);
     }
 
-    public HallDTO removeHallFromConference(int userId, int hallId, int conferenceId) {
+    public String removeHallFromConference(int userId, int hallId, int conferenceId) {
         Conference conference = getConferenceById(conferenceId);
         User user = getUserById(userId);
         Hall hall = getHallById(hallId);
 
         validateConferenceOwner(conference, user);
+        if (!conference.getHalls().contains(hall)){
+            throw new BadRequestException("This hall is not previously added.");
+        }
         conference.getHalls().remove(hall);
         conferenceRepository.save(conference);
-        return modelMapper.map(hall, HallDTO.class);
+        return "Hall is successfully removed from conference";
     }
 
     private void validateConferenceOwner(Conference conference, User user) {
@@ -54,12 +61,6 @@ public class HallService extends MasterService {
         }
     }
 
-    public HallDTO createHall(CreateHallDTO hall, int userId) {
-        getUserById(userId);
-        Hall hallToSave = modelMapper.map(hall, Hall.class);
-        hallRepository.save(hallToSave);
-        return modelMapper.map(hallToSave, HallDTO.class);
-    }
 
     public HallWithSessionsDTO viewHall(int hid) {
         Hall hall = getHallById(hid);
