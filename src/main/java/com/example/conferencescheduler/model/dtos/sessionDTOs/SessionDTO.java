@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class SessionDTO {
     private int conferenceId;
     private String name;
     private String description;
-    private List<LocalDateTime> bookedHours;
+    private List<LocalTime> bookedHours;
     private LocalDateTime endDate;
     private Integer hallId;
 }
