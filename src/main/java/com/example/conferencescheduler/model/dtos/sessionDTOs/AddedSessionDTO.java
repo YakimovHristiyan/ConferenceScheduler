@@ -1,23 +1,19 @@
 package com.example.conferencescheduler.model.dtos.sessionDTOs;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class SessionDTO {
+public class AddedSessionDTO {
 
     private int conferenceId;
     private String name;
     private String description;
-    private List<LocalTime> bookedHours;
+    private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer hallId;
+
 }

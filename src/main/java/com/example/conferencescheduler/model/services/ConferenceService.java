@@ -2,6 +2,7 @@ package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.Session;
@@ -79,5 +80,14 @@ public class ConferenceService extends MasterService {
         conferenceRepository.save(conference);
         hallRepository.save(hall);
         return dto;
+    }
+
+    public List<SessionDTO> getConferenceAllSessions(int cid) {
+        Conference conference = conferenceRepository.findByConferenceId(cid)
+                .orElseThrow(() -> new NotFoundException("Conference not found."));
+        return conference.getSessions()
+                .stream()
+                .map(session -> modelMapper.map(session, SessionDTO.class))
+                .toList();
     }
 }
