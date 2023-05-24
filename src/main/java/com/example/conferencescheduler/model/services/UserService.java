@@ -141,6 +141,9 @@ public class UserService extends MasterService {
             throw new ForbiddenException("You can not apply for sessions!");
         }
         List<Session> sessionsByDate = sessionRepository.getSessionByDateOrderByStartDate(dateDTO.getDate());
+        if(sessionsByDate.isEmpty()){
+            throw new BadRequestException("There are no session for this date!");
+        }
         User user = assertAttendanceToAvailableSessions(getUserById(userId), dateDTO, sessionsByDate);
         userRepository.save(user);
         return modelMapper.map(user, UserWithSessionDTO.class);
