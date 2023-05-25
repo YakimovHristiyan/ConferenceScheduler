@@ -2,13 +2,11 @@ package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.AddedSessionDTO;
-import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.*;
 import com.example.conferencescheduler.model.entities.*;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.ForbiddenException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
-import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -146,11 +144,6 @@ public class UserService extends MasterService {
         return dto;
     }
 
-//            } else if (!availableSession.getStartDate().isAfter(previousAssignedSession.getEndDate())
-//                    && !availableSession.getEndDate().isBefore(previousAssignedSession.getStartDate())) {
-//                continue;
-//
-//            }
     private User assertAttendanceToAvailableSessions(User user, DateDTO dateDTO,
                                                      List<Session> availableSessions, List<Session> possibleSessions) {
         Session previousAssignedSession = null;
@@ -161,18 +154,6 @@ public class UserService extends MasterService {
                 continue;
             }
             boolean isHourFree = checkHoursAreFree(previousAssignedSession, availableSession);
-//            long startTime = dateConverter(availableSession.getStartDate());
-//            long endTime = dateConverter(availableSession.getEndDate());
-//
-//            if (startTime <= startTimeOfExistingSession && endTime >= endTimeOfExistingSession) {
-//                isHourFree = false;
-//                break;
-//            }
-//            if ((startTime >= startTimeOfExistingSession && startTime < endTimeOfExistingSession)
-//                    || (endTime > startTimeOfExistingSession && endTime <= endTimeOfExistingSession)) {
-//                isHourFree = false;
-//                break;
-//            }
             if(isHourFree){
             saveSessionIfFree(availableSession, user, possibleSessions);
             previousAssignedSession = availableSession;

@@ -14,9 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -95,20 +92,6 @@ public class SessionService extends MasterService {
     private void iterateSessionAndCheckIfTheHoursFree(List<Session> bookedSessions, Session sessionWithWantedHours) {
         boolean isHourFree = true;
         for (Session bookedSession : bookedSessions) {
-//            long startTime = dateConverter(sessionWithWantedHours.getStartDate());
-//            long endTime = dateConverter(sessionWithWantedHours.getEndDate());
-//            long startTimeOfExistingSession = dateConverter(bookedSession.getStartDate());
-//            long endTimeOfExistingSession = dateConverter(bookedSession.getEndDate());
-//
-//            if (startTime <= startTimeOfExistingSession && endTime >= endTimeOfExistingSession) {
-//                isHourFree = false;
-//                break;
-//            }
-//            if ((startTime >= startTimeOfExistingSession && startTime < endTimeOfExistingSession)
-//                    || (endTime > startTimeOfExistingSession && endTime <= endTimeOfExistingSession)) {
-//                isHourFree = false;
-//                break;
-//            }
            isHourFree = checkHoursAreFree(bookedSession, sessionWithWantedHours);
         }
 
