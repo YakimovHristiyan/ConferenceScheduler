@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 public class SessionController extends AbstractController {
 
@@ -18,7 +16,7 @@ public class SessionController extends AbstractController {
 
     @PostMapping("/session")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
-    public AddedSessionDTO addSession(@RequestBody SessionDTO dto, HttpSession httpSession){
+    public AddedSessionDTO addSession(@RequestBody SessionDTO dto, HttpSession httpSession) {
         int userId = getUserId(httpSession);
         return sessionService.addSession(dto, userId);
     }

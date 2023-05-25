@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class HallService extends MasterService {
@@ -38,7 +37,9 @@ public class HallService extends MasterService {
         conferenceRepository.save(conference);
         hall.getConferences().add(conference);
         hallRepository.save(hall);
-        return modelMapper.map(hall, HallDTO.class);
+        HallDTO hallDTO = modelMapper.map(hall, HallDTO.class);
+        hallDTO.setTimes(null);
+        return hallDTO;
     }
 
     public String removeHallFromConference(int userId, int hallId, int conferenceId) {

@@ -1,7 +1,6 @@
 package com.example.conferencescheduler.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -45,6 +44,7 @@ public class User {
     @Column
     private boolean isVerified;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToMany(mappedBy = "guests")
     private List<Session> sessions;
 
