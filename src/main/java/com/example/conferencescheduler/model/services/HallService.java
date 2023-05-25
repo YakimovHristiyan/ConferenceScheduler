@@ -38,7 +38,9 @@ public class HallService extends MasterService {
         conferenceRepository.save(conference);
         hall.getConferences().add(conference);
         hallRepository.save(hall);
-        return modelMapper.map(hall, HallDTO.class);
+        HallDTO hallDTO = modelMapper.map(hall, HallDTO.class);
+        hallDTO.setTimes(null);
+        return hallDTO;
     }
 
     public String removeHallFromConference(int userId, int hallId, int conferenceId) {

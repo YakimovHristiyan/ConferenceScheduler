@@ -26,7 +26,11 @@ public class ConferenceService extends MasterService {
         if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE) {
             throw new UnauthorizedException("You do not have permission to publish conferences!");
         }
+        if(conferenceRepository.getConferenceByConferenceName(conferenceDTO.getConferenceName()) != null){
+            throw new BadRequestException("This name for conference is taken!");
+        }
         Conference conference = modelMapper.map(conferenceDTO, Conference.class);
+        conference.setStartDate(conferenceDTO.getStartDate().minusHours(conferenceDTO.getStartDate().getHour()));
         conference.setOwner(user);
         conferenceRepository.save(conference);
         return modelMapper.map(conference, ConferenceDTO.class);
