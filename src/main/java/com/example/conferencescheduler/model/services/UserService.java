@@ -1,6 +1,8 @@
 package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.AddedSessionDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.*;
 import com.example.conferencescheduler.model.entities.*;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService extends MasterService {
@@ -82,101 +85,112 @@ public class UserService extends MasterService {
 
     @Transactional
     public UserWithSessionDTO assertAttendance(int userId, AttendanceDTO attendanceDTO) {
-        //1.Get User by id
         User user = getUserById(userId);
-        //2.Get Conference by id
-        Conference conference = getConferenceById(attendanceDTO.getConferenceId());
-        //3.Get session by id
-        Session session = sessionRepository.findBySessionId(attendanceDTO.getSessionId())
-                .orElseThrow(() -> new NotFoundException("Session not found."));
-        //4.Check if already this user is going on this conference
+        getConferenceById(attendanceDTO.getConferenceId());
+        Session session = getSessionById(attendanceDTO.getSessionId());
+
         if (user.getSessions().contains(session)) {
             throw new BadRequestException("You are already guest for this session.");
         }
+//
+//           5.Can not mark colliding sessions in more than one hall
+//           - iterate over all session in the list and check if
+//           there have another session in this time in another room
 
-            /*
-           5.Can not mark colliding sessions in more than one hall
-           - iterate over all session in the list and check if
-           there have another session in this time in another room
-            */
         //6. Add session in the list
-        LocalDateTime wantedSessionStartDate = session.getStartDate();
-        LocalDateTime wantedSessionEndDate = session.getEndDate();
-        boolean hasColliding = false;
+        boolean isFree = true;
         if (user.getSessions().isEmpty()) {
             saveSessionIfFree(session, user);
             return modelMapper.map(user, UserWithSessionDTO.class);
         }
-        for (Session s : user.getSessions()) {
-            LocalDateTime currentSessionStartDate = s.getStartDate();
-            LocalDateTime currentSessionEndDate = s.getEndDate();
-            Hall hall = s.getHall();
+        for (Session userSession : user.getSessions()) {
+            Hall hall = userSession.getHall();
             if (session.getHall().getHallId() != hall.getHallId()) {
-                if (!wantedSessionStartDate.isAfter(currentSessionEndDate)
-                        && !wantedSessionEndDate.isBefore(currentSessionStartDate)) {
-                    hasColliding = true;
+                isFree = checkHoursAreFree(userSession, session);
+                if(!isFree){
                     break;
                 }
             }
         }
-        System.out.println(hasColliding);
-        if (hasColliding) {
+        if (!isFree) {
             throw new BadRequestException("Current session is colliding with other session in your list.");
         }
         saveSessionIfFree(session, user);
-
         return modelMapper.map(user, UserWithSessionDTO.class);
     }
 
     private void saveSessionIfFree(Session session, User user) {
         if (session.getGuests().size() == session.getHall().getCapacity()) {
             throw new BadRequestException("There is no more free seat in the hall.");
-        } else {
-            user.getSessions().add(session);
-            session.getGuests().add(user);
-            userRepository.save(user);
-            sessionRepository.save(session);
         }
+        user.getSessions().add(session);
+        session.getGuests().add(user);
+        userRepository.save(user);
+        sessionRepository.save(session);
     }
 
+    @Transactional
     public UserWithSessionDTO applyForMaximumProgram(int userId, DateDTO dateDTO) {
+        List<Session> sessionsByDate = sessionRepository.getSessionByDateOrderByStartDate(dateDTO.getDate());
+        List<Session> possibleSessions = new ArrayList<>();
         if (getUserById(userId).getUserRole().getRoleId() != USER_ROLE) {
             throw new ForbiddenException("You can not apply for sessions!");
         }
-        List<Session> sessionsByDate = sessionRepository.getSessionByDateOrderByStartDate(dateDTO.getDate());
-        if(sessionsByDate.isEmpty()){
+        if (sessionsByDate.isEmpty()) {
             throw new BadRequestException("There are no session for this date!");
         }
-        User user = assertAttendanceToAvailableSessions(getUserById(userId), dateDTO, sessionsByDate);
+        User user = assertAttendanceToAvailableSessions(getUserById(userId), dateDTO, sessionsByDate, possibleSessions);
         userRepository.save(user);
-        return modelMapper.map(user, UserWithSessionDTO.class);
+        UserWithSessionDTO dto = modelMapper.map(user, UserWithSessionDTO.class);
+        dto.setSessions(user.getSessions().stream().map(session -> modelMapper.map(session, AddedSessionDTO.class)).collect(Collectors.toList()));
+        return dto;
     }
 
-    private User assertAttendanceToAvailableSessions(User user, DateDTO dateDTO, List<Session> availableSessions) {
-        // Deleting already assigned session in order to use max program
-        List<Session> assignedSessionsForTheDay = user.getSessions().stream().
-                filter(e -> e.getStartDate().toLocalDate()
-                        .isEqual(dateDTO.getDate()))
-                .toList();
-        if (!assignedSessionsForTheDay.isEmpty()) {
-            assignedSessionsForTheDay.forEach(e -> user.getSessions().remove(e));
-        }
-
+//            } else if (!availableSession.getStartDate().isAfter(previousAssignedSession.getEndDate())
+//                    && !availableSession.getEndDate().isBefore(previousAssignedSession.getStartDate())) {
+//                continue;
+//
+//            }
+    private User assertAttendanceToAvailableSessions(User user, DateDTO dateDTO,
+                                                     List<Session> availableSessions, List<Session> possibleSessions) {
         Session previousAssignedSession = null;
         for (Session availableSession : availableSessions) {
             if (previousAssignedSession == null) {
-                user.getSessions().add(availableSession);
+                saveSessionIfFree(availableSession, user, possibleSessions);
                 previousAssignedSession = availableSession;
                 continue;
-            } else if (!availableSession.getStartDate().isAfter(previousAssignedSession.getEndDate())
-                    && !availableSession.getEndDate().isBefore(previousAssignedSession.getStartDate())) {
-                continue;
-
             }
-            user.getSessions().add(availableSession);
+            boolean isHourFree = checkHoursAreFree(previousAssignedSession, availableSession);
+//            long startTime = dateConverter(availableSession.getStartDate());
+//            long endTime = dateConverter(availableSession.getEndDate());
+//
+//            if (startTime <= startTimeOfExistingSession && endTime >= endTimeOfExistingSession) {
+//                isHourFree = false;
+//                break;
+//            }
+//            if ((startTime >= startTimeOfExistingSession && startTime < endTimeOfExistingSession)
+//                    || (endTime > startTimeOfExistingSession && endTime <= endTimeOfExistingSession)) {
+//                isHourFree = false;
+//                break;
+//            }
+            if(isHourFree){
+            saveSessionIfFree(availableSession, user, possibleSessions);
             previousAssignedSession = availableSession;
+            }
         }
+        user.getSessions().addAll(possibleSessions);
         return user;
     }
 
+    private void saveSessionIfFree(Session session, User user, List<Session> possibleSessions) {
+        if (session.getGuests().size() == session.getHall().getCapacity()) {
+            throw new BadRequestException("There is no more free seat in the hall.");
+        }
+        if (user.getSessions().contains(session)) {
+            return;
+        }
+        session.getGuests().add(user);
+        sessionRepository.save(session);
+        possibleSessions.add(session);
+    }
 }

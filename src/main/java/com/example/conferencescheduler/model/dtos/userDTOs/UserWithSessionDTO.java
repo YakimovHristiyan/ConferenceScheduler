@@ -1,8 +1,9 @@
 package com.example.conferencescheduler.model.dtos.userDTOs;
 
+import com.example.conferencescheduler.model.dtos.sessionDTOs.AddedSessionDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.entities.Session;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class UserWithSessionDTO {
-    private int id;
-    @JsonIgnore
-    private List<Session> sessions;
+    private int userId;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<AddedSessionDTO> sessions;
 }
