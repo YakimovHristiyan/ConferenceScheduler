@@ -2,8 +2,11 @@ package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.AssignConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDetailsDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
+import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDetailsDTO;
+import com.example.conferencescheduler.model.dtos.speakerDTOs.SpeakerDetailsDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Hall;
 import com.example.conferencescheduler.model.entities.Session;
@@ -11,6 +14,7 @@ import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
+import lombok.Builder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,12 +60,24 @@ public class ConferenceService extends MasterService {
     }
 
     public List<ConferenceDTO> getAllConferences() {
+        System.out.println("Tyk li sam");
         List<Conference> conferences = conferenceRepository.findAll();
+        System.out.println("Tyk li sam 1");
         return conferences.stream().map(e -> modelMapper.map(e, ConferenceDTO.class)).collect(Collectors.toList());
     }
 
-    public ConferenceDTO viewConference(int id) {
-        return modelMapper.map(getConferenceById(id), ConferenceDTO.class);
+    public ConferenceDetailsDTO viewConference(int cid) {
+        Conference conference = getConferenceById(cid);
+        List<SessionDetailsDTO> list = conference.getSessions()
+                .stream()
+                .map(session -> modelMapper.map(session, SessionDetailsDTO.class))
+                .toList();
+        for (SessionDetailsDTO s: list){
+
+        }
+        ConferenceDetailsDTO conf = modelMapper.map(getConferenceById(cid), ConferenceDetailsDTO.class);
+        conf.setSessionDetailsDTOS(list);
+        return conf;
     }
 
     public List<SessionDTO> getConferenceAllSessions(int cid) {

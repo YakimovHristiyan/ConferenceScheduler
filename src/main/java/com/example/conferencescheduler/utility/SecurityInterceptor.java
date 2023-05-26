@@ -18,7 +18,8 @@ public class SecurityInterceptor implements HandlerInterceptor {
                 uri.contains("speakers/registration") ||
                 uri.contains("email-verification") ||
                 uri.contains("auth") ||
-                uri.contains("logout")) {
+                uri.contains("logout") ||
+                uri.contains("conference")) {
             return true;
         }
         HttpSession session = request.getSession();
