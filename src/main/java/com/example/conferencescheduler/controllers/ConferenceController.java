@@ -1,6 +1,7 @@
 package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDetailsDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.services.ConferenceService;
@@ -41,14 +42,14 @@ public class ConferenceController extends AbstractController {
     @GetMapping("/conference")
     @ResponseStatus(code = HttpStatus.OK)
     public List<ConferenceDTO> getAllConferences() {
+        System.out.println("conference controller");
         return conferenceService.getAllConferences();
     }
 
     @GetMapping("/conference/{cid}")
     @ResponseStatus(code = HttpStatus.OK)
-    public ConferenceDTO viewConference(@PathVariable int cid, HttpSession session) {
-        int id = getUserId(session);
-        return conferenceService.viewConference(id);
+    public ConferenceDetailsDTO viewConference(@PathVariable int cid) {
+        return conferenceService.viewConference(cid);
     }
 
     @GetMapping("/session/all-conference-sessions/{cid}")
@@ -56,6 +57,8 @@ public class ConferenceController extends AbstractController {
     public List<SessionDTO> getConferenceAllSessions(@PathVariable int cid){
         return conferenceService.getConferenceAllSessions(cid);
     }
+
+
 
 
 }

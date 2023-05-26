@@ -50,4 +50,8 @@ public class Session {
     )
     @JsonIgnore
     private List<User> guests;
+
+    @OneToOne
+    @JoinColumn(name = "speaker_id")
+    private Speaker speaker;
 }

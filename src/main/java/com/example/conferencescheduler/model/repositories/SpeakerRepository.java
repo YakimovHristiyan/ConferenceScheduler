@@ -8,9 +8,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Repository
 public interface SpeakerRepository extends JpaRepository<Speaker, Integer> {
 
     Speaker findByUser(User user);
+    Optional<Speaker> findSpeakerBySpeakerId(int id);
 }
