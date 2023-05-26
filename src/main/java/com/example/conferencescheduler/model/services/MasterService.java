@@ -206,4 +206,8 @@ public abstract class MasterService {
     protected Session getSessionById(int sessionId) {
         return sessionRepository.findBySessionId(sessionId).orElseThrow(() -> new NotFoundException("Session not found."));
     }
+
+    protected Speaker getSpeakerById(int speakerId){
+        return speakerRepository.findSpeakerBySpeakerId(speakerId).orElseThrow(() -> new NotFoundException("Speaker not found."));
+    }
 }

@@ -2,10 +2,7 @@ package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.sessionDTOs.AddedSessionDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
-import com.example.conferencescheduler.model.entities.Conference;
-import com.example.conferencescheduler.model.entities.Hall;
-import com.example.conferencescheduler.model.entities.Session;
-import com.example.conferencescheduler.model.entities.User;
+import com.example.conferencescheduler.model.entities.*;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
@@ -133,5 +130,16 @@ public class SessionService extends MasterService {
         if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE || conference.getOwner().getUserId() != user.getUserId()) {
             throw new UnauthorizedException("You are not owner of this conference!");
         }
+    }
+
+    public String assignSpeakerToSession(int userId, int sid, int spid) {
+        Session session = getSessionById(sid);
+        if (session.getConference().getOwner().getUserId() != userId){
+            throw new BadRequestException("You are not the owner of this conference.");
+        }
+        Speaker speaker = getSpeakerById(spid);
+        session.setSpeaker(speaker);
+        sessionRepository.save(session);
+        return "Speaker successfully added to the current session";
     }
 }
