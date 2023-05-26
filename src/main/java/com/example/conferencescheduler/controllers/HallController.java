@@ -5,7 +5,6 @@ import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
 import com.example.conferencescheduler.model.dtos.hallDTOs.HallDTO;
 import com.example.conferencescheduler.model.dtos.hallDTOs.HallWithSessionsDTO;
 import com.example.conferencescheduler.model.services.HallService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

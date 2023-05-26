@@ -20,7 +20,7 @@ public interface SessionRepository extends JpaRepository<Session, Integer> {
     @Query(value = "SELECT * FROM session WHERE DATE(start_date) = :date", nativeQuery = true)
     List<Session> getSessionByDate(LocalDate date);
 
-    @Query(value = "SELECT * FROM session WHERE DATE(start_date) = :date ORDER BY (start_date) ASC", nativeQuery = true)
+    @Query(value = "SELECT * FROM session WHERE DATE(start_date) = :date ORDER BY (start_date), (end_date)", nativeQuery = true)
     List<Session> getSessionByDateOrderByStartDate(LocalDate date);
 
 }

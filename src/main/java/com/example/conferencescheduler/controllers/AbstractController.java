@@ -1,14 +1,12 @@
 package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.ExceptionDTO;
-import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
 

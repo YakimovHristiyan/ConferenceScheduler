@@ -1,12 +1,9 @@
 package com.example.conferencescheduler.model.services;
 
-import com.example.conferencescheduler.model.dtos.userDTOs.UserLoginDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.UserRegisterDTO;
-import com.example.conferencescheduler.model.dtos.userDTOs.UserWithoutPassDTO;
 import com.example.conferencescheduler.model.entities.*;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
-import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
 import com.example.conferencescheduler.model.repositories.*;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.modelmapper.ModelMapper;
@@ -19,7 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -158,6 +156,27 @@ public abstract class MasterService {
                 .password(encoder.encode(dto.getPassword()))
                 .registerAt(LocalDateTime.now())
                 .build();
+    }
+
+    protected long dateConverter(LocalDateTime dateTime) {
+        ZonedDateTime zdt = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
+        return zdt.toInstant().toEpochMilli();
+    }
+
+    protected boolean checkHoursAreFree(Session assigned, Session possible){
+        long startTime = dateConverter(possible.getStartDate());
+        long endTime = dateConverter(possible.getEndDate());
+        long startTimeOfExistingSession = dateConverter(assigned.getStartDate());
+        long endTimeOfExistingSession = dateConverter(assigned.getEndDate());
+
+        if (startTime <= startTimeOfExistingSession && endTime >= endTimeOfExistingSession) {
+            return false;
+        }
+        if ((startTime >= startTimeOfExistingSession && startTime < endTimeOfExistingSession)
+                || (endTime > startTimeOfExistingSession && endTime <= endTimeOfExistingSession)) {
+            return false;
+        }
+        return true;
     }
 
     protected boolean validatePassword(String password) {

@@ -14,9 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -31,16 +28,12 @@ public class SessionService extends MasterService {
         User user = getUserById(userId);
         Conference conference = getConferenceById(dto.getConferenceId());
         Hall hall = getHallById(dto.getHallId());
-        validateOwnerRights(conference, user);
-
+        if(!conference.getHalls().contains(getHallById(dto.getHallId()))){
+            throw new BadRequestException("This hall is not assigned to the conference!");
+        }
         List<LocalTime> sortedHours = sortBookedHours(dto.getBookedHours());
-        if (sortedHours.get(0).isBefore(LocalTime.of(startingWorkingHour, 0, 0))) {
-            throw new BadRequestException("Booked time cannot be before 09:00:00");
-        }
-        if ((sortedHours.get(sortedHours.size() - 1)).isAfter(LocalTime.of(endingWorkingHour, 0, 0))
-        || (sortedHours.get(sortedHours.size() - 1)).equals(LocalTime.of(endingWorkingHour, 0, 0))) {
-            throw new BadRequestException("Booked time cannot be after 18:00:00");
-        }
+        validateOwnerRights(conference, user);
+        isWorkingHours(sortedHours);
 
         Session session = Session.builder()
                 .name(dto.getName())
@@ -60,14 +53,8 @@ public class SessionService extends MasterService {
         if (!bookedSessions.isEmpty()) {
             iterateSessionAndCheckIfTheHoursFree(bookedSessions, session);
         }
-        // Assigning end date of conference based on the latest session
-        if (conference.getEndDate() == null) {
-            conference.setEndDate(session.getEndDate());
-            conferenceRepository.save(conference);
-        } else if (conference.getEndDate().isBefore(session.getEndDate())) {
-            conference.setEndDate(session.getEndDate());
-            conferenceRepository.save(conference);
-        }
+        // Assigning end date and start date of conference based on the latest session
+        setConferenceStartAndEnd(conference, session);
 
         sessionRepository.save(session);
         hall.getSessions().add(session);
@@ -75,23 +62,37 @@ public class SessionService extends MasterService {
         return modelMapper.map(session, AddedSessionDTO.class);
     }
 
+    private void setConferenceStartAndEnd(Conference conference, Session session) {
+        if (conference.getStartDate().getHour() == 0) {
+            conference.setStartDate(session.getStartDate());
+            conferenceRepository.save(conference);
+        } else if (conference.getStartDate().isAfter(session.getStartDate())) {
+            conference.setStartDate(session.getStartDate());
+            conferenceRepository.save(conference);
+        }
+        if (conference.getEndDate() == null) {
+            conference.setEndDate(session.getEndDate());
+            conferenceRepository.save(conference);
+        } else if (conference.getEndDate().isBefore(session.getEndDate())) {
+            conference.setEndDate(session.getEndDate());
+            conferenceRepository.save(conference);
+        }
+    }
+
+    private void isWorkingHours(List<LocalTime> sortedHours) {
+        if (sortedHours.get(0).isBefore(LocalTime.of(startingWorkingHour, 0, 0))) {
+            throw new BadRequestException("Booked time cannot be before 09:00:00");
+        }
+        if ((sortedHours.get(sortedHours.size() - 1)).isAfter(LocalTime.of(endingWorkingHour, 0, 0))
+                || (sortedHours.get(sortedHours.size() - 1)).equals(LocalTime.of(endingWorkingHour, 0, 0))) {
+            throw new BadRequestException("Booked time cannot be after 18:00:00");
+        }
+    }
+
     private void iterateSessionAndCheckIfTheHoursFree(List<Session> bookedSessions, Session sessionWithWantedHours) {
-        long startTime = dateConverter(sessionWithWantedHours.getStartDate());
-        long endTime = dateConverter(sessionWithWantedHours.getEndDate());
         boolean isHourFree = true;
         for (Session bookedSession : bookedSessions) {
-            long startTimeOfExistingSession = dateConverter(bookedSession.getStartDate());
-            long endTimeOfExistingSession = dateConverter(bookedSession.getEndDate());
-
-            if (startTime <= startTimeOfExistingSession && endTime >= endTimeOfExistingSession) {
-                isHourFree = false;
-                break;
-            }
-            if ((startTime >= startTimeOfExistingSession && startTime < endTimeOfExistingSession)
-                    || (endTime > startTimeOfExistingSession && endTime <= endTimeOfExistingSession)) {
-                isHourFree = false;
-                break;
-            }
+           isHourFree = checkHoursAreFree(bookedSession, sessionWithWantedHours);
         }
 
         if (!isHourFree) {
@@ -102,11 +103,6 @@ public class SessionService extends MasterService {
     private List<LocalTime> sortBookedHours(List<LocalTime> bookedHours) {
         bookedHours.sort(Comparator.comparingInt(LocalTime::getHour));
         return bookedHours;
-    }
-
-    private long dateConverter(LocalDateTime dateTime) {
-        ZonedDateTime zdt = ZonedDateTime.of(dateTime, ZoneId.systemDefault());
-        return zdt.toInstant().toEpochMilli();
     }
 
     public SessionDTO deleteSession(int userId, int sessionId) {

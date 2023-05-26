@@ -2,22 +2,16 @@ package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.*;
-import com.example.conferencescheduler.model.entities.Session;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.services.UserService;
-import com.google.api.client.util.DateTime;
 import jakarta.annotation.security.PermitAll;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @PermitAll
@@ -70,7 +64,7 @@ public class UserController extends AbstractController {
         return userService.assertAttendance(userId, attendanceDTO);
     }
 
-    @PutMapping("/user/maximumprogram")
+    @PutMapping("/user/maximum-program")
     @ResponseStatus(code = HttpStatus.OK)
     public UserWithSessionDTO applyForMaximumProgram(@RequestBody DateDTO dateDTO, HttpSession session) {
         int userId = getUserId(session);
