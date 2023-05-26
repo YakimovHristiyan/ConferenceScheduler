@@ -48,4 +48,10 @@ public class Conference {
 
     @ManyToMany(mappedBy = "conferences")
     private List<Hall> halls;
+
+    @OneToOne
+    @JoinColumn(name = "conference_status_id")
+    private Status status;
+
+
 }
