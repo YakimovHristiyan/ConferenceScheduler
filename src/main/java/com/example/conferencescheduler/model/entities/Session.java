@@ -51,7 +51,7 @@ public class Session {
     @JsonIgnore
     private List<User> guests;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "speaker_id")
     private Speaker speaker;
 }
