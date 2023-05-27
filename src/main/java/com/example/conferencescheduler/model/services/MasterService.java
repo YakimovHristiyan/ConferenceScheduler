@@ -26,6 +26,9 @@ public abstract class MasterService {
     protected final static int USER_ROLE = 1;
     protected final static int SPEAKER_ROLE = 2;
     protected final static int CONFERENCE_OWNER_ROLE = 3;
+    public final static int ACTIVE_STATUS = 1;
+    public final static int INACTIVE_STATUS = 2;
+    protected final static int SUSPENDED_STATUS = 3;
     protected static final String DEF_PROFILE_IMAGE_URI = "uploads" + File.separator + "def_profile_image.png"; //TODO add the folder
 
     @Autowired
@@ -46,6 +49,8 @@ public abstract class MasterService {
     protected ModelMapper modelMapper;
     @Autowired
     protected UserRoleRepository userRoleRepository;
+    @Autowired
+    protected StatusRepository statusRepository;
 
     private void validateUserInformation(UserRegisterDTO dto) {
         if (userRepository.findByPhone(dto.getPhone()).isPresent()) {
@@ -163,7 +168,7 @@ public abstract class MasterService {
         return zdt.toInstant().toEpochMilli();
     }
 
-    protected boolean checkHoursAreFree(Session assigned, Session possible){
+    protected boolean checkHoursAreFree(Session assigned, Session possible) {
         long startTime = dateConverter(possible.getStartDate());
         long endTime = dateConverter(possible.getEndDate());
         long startTimeOfExistingSession = dateConverter(assigned.getStartDate());
@@ -207,7 +212,7 @@ public abstract class MasterService {
         return sessionRepository.findBySessionId(sessionId).orElseThrow(() -> new NotFoundException("Session not found."));
     }
 
-    protected Speaker getSpeakerById(int speakerId){
+    protected Speaker getSpeakerById(int speakerId) {
         return speakerRepository.findSpeakerBySpeakerId(speakerId).orElseThrow(() -> new NotFoundException("Speaker not found."));
     }
 }
