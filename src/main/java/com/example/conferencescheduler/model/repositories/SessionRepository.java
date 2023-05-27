@@ -16,6 +16,7 @@ import java.util.Optional;
 @Repository
 public interface SessionRepository extends JpaRepository<Session, Integer> {
     Optional<Session>findBySessionId(int id);
+    void deleteAllByConference_ConferenceId (int conferenceId);
 
     @Query(value = "SELECT * FROM session WHERE DATE(start_date) = :date", nativeQuery = true)
     List<Session> getSessionByDate(LocalDate date);
