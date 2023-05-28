@@ -2,6 +2,7 @@ package com.example.conferencescheduler.controllers;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDetailsDTO;
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceWithStatusDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.services.ConferenceService;
@@ -41,9 +42,8 @@ public class ConferenceController extends AbstractController {
 
     @GetMapping("/conference")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<ConferenceDTO> getAllActiveConferences() {
-        System.out.println("conference controller");
-        return conferenceService.getAllActiveConferences();
+    public List<ConferenceWithStatusDTO> getAllConferences() {
+        return conferenceService.getAllConferences();
     }
 
     @GetMapping("/conference/{cid}")

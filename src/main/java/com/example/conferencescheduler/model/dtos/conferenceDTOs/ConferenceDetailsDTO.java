@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConferenceDetailsDTO {
 
+    private int conferenceId;
     private List<SessionDetailsDTO> sessionDetailsDTOS;
 
 }

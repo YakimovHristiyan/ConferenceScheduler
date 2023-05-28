@@ -8,7 +8,6 @@ public class CorsConfig extends WebMvcConfiguration {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        System.out.println("cors");
         registry.addMapping("/**")
                 .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")

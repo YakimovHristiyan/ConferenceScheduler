@@ -20,7 +20,9 @@ public class SessionDetailsDTO {
     private String description;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private int hallId;
-    private int speakerId;
+    private String hallName;
+    private String speakerName;
+    private int takenSeats;
+    private int allSeats;
 
 }

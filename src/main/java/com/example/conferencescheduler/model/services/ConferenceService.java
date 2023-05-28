@@ -2,16 +2,23 @@ package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDetailsDTO;
+import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceWithStatusDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDetailsDTO;
+import com.example.conferencescheduler.model.dtos.speakerDTOs.SpeakerDetailsDTO;
 import com.example.conferencescheduler.model.entities.Conference;
+import com.example.conferencescheduler.model.entities.Session;
+import com.example.conferencescheduler.model.entities.Status;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
+import lombok.Builder;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,13 +30,12 @@ public class ConferenceService extends MasterService {
         if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE) {
             throw new UnauthorizedException("You do not have permission to publish conferences!");
         }
-        if (conferenceRepository.getConferenceByConferenceName(conferenceDTO.getConferenceName()) != null) {
+        if(conferenceRepository.getConferenceByConferenceName(conferenceDTO.getConferenceName()) != null){
             throw new BadRequestException("This name for conference is taken!");
         }
         Conference conference = modelMapper.map(conferenceDTO, Conference.class);
         conference.setStartDate(conferenceDTO.getStartDate().minusHours(conferenceDTO.getStartDate().getHour()));
         conference.setOwner(user);
-        conference.setStatus(statusRepository.getReferenceById(ACTIVE_STATUS));
         conferenceRepository.save(conference);
         return modelMapper.map(conference, ConferenceDTO.class);
     }
@@ -58,20 +64,31 @@ public class ConferenceService extends MasterService {
         return modelMapper.map(conference, ConferenceDTO.class);
     }
 
-    public List<ConferenceDTO> getAllActiveConferences() {
-        List<Conference> conferences = conferenceRepository.findAll().stream()
-                .filter(conference -> conference.getStatus().getConferenceStatusId() == ACTIVE_STATUS).
-                filter(conference -> !conference.getSessions().isEmpty()).toList();
-        return conferences.stream().map(e -> modelMapper.map(e, ConferenceDTO.class)).collect(Collectors.toList());
+    public List<ConferenceWithStatusDTO> getAllConferences() {
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        List<Conference> conferences = conferenceRepository.findAll();
+        List<ConferenceWithStatusDTO> conferenceWithStatusDTOS = new ArrayList<>();
+        for (int i = 0; i < conferences.size(); i++) {
+            conferenceWithStatusDTOS.add(modelMapper.map(conferences.get(i), ConferenceWithStatusDTO.class));
+            conferenceWithStatusDTOS.get(i).setConferenceStatus(conferences.get(i).getStatus().getType());
+        }
+        return conferenceWithStatusDTOS;
     }
 
     public ConferenceDetailsDTO viewConference(int cid) {
         Conference conference = getConferenceById(cid);
+        List<Session> sessions = conference.getSessions();
         List<SessionDetailsDTO> list = conference.getSessions()
                 .stream()
                 .map(session -> modelMapper.map(session, SessionDetailsDTO.class))
                 .toList();
-        ConferenceDetailsDTO conf = modelMapper.map(getConferenceById(cid), ConferenceDetailsDTO.class);
+        for (int i = 0; i < sessions.size(); i++) {
+            StringBuilder speakerName = new StringBuilder()
+                    .append(sessions.get(i).getSpeaker().getUser().getFirstName() + " " + sessions.get(i).getSpeaker().getUser().getLastName());
+            list.get(i).setSpeakerName(speakerName.toString());
+            list.get(i).setHallName(sessions.get(i).getHall().getHallName());
+        }
+        ConferenceDetailsDTO conf = modelMapper.map(conference, ConferenceDetailsDTO.class);
         conf.setSessionDetailsDTOS(list);
         return conf;
     }
@@ -79,13 +96,10 @@ public class ConferenceService extends MasterService {
     public List<SessionDTO> getConferenceAllSessions(int cid) {
         Conference conference = conferenceRepository.findByConferenceId(cid)
                 .orElseThrow(() -> new NotFoundException("Conference not found."));
-        if (conference.getStatus().getConferenceStatusId() != ACTIVE_STATUS){
-            throw new BadRequestException("The conference is not active!");
-        }
-            return conference.getSessions()
-                    .stream()
-                    .map(session -> modelMapper.map(session, SessionDTO.class))
-                    .toList();
+        return conference.getSessions()
+                .stream()
+                .map(session -> modelMapper.map(session, SessionDTO.class))
+                .toList();
     }
-
+  
 }
