@@ -46,6 +46,8 @@ public abstract class MasterService {
     protected ModelMapper modelMapper;
     @Autowired
     protected UserRoleRepository userRoleRepository;
+    @Autowired
+    protected StatusRepository statusRepository;
 
     private void validateUserInformation(UserRegisterDTO dto) {
         if (userRepository.findByPhone(dto.getPhone()).isPresent()) {
@@ -209,5 +211,9 @@ public abstract class MasterService {
 
     protected Speaker getSpeakerById(int speakerId){
         return speakerRepository.findSpeakerBySpeakerId(speakerId).orElseThrow(() -> new NotFoundException("Speaker not found."));
+    }
+
+    protected Status getStatusById(int statusId){
+        return statusRepository.findByConferenceStatusId(statusId).orElseThrow(() -> new NotFoundException("Status does not exist."));
     }
 }
