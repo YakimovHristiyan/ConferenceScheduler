@@ -25,7 +25,7 @@ public class SessionService extends MasterService {
         User user = getUserById(userId);
         Conference conference = getConferenceById(dto.getConferenceId());
         Hall hall = getHallById(dto.getHallId());
-        if(!conference.getHalls().contains(getHallById(dto.getHallId()))){
+        if (!conference.getHalls().contains(getHallById(dto.getHallId()))) {
             throw new BadRequestException("This hall is not assigned to the conference!");
         }
         List<LocalTime> sortedHours = sortBookedHours(dto.getBookedHours());
@@ -89,7 +89,7 @@ public class SessionService extends MasterService {
     private void iterateSessionAndCheckIfTheHoursFree(List<Session> bookedSessions, Session sessionWithWantedHours) {
         boolean isHourFree = true;
         for (Session bookedSession : bookedSessions) {
-           isHourFree = checkHoursAreFree(bookedSession, sessionWithWantedHours);
+            isHourFree = checkHoursAreFree(bookedSession, sessionWithWantedHours);
         }
 
         if (!isHourFree) {
@@ -132,14 +132,31 @@ public class SessionService extends MasterService {
         }
     }
 
-    public String assignSpeakerToSession(int userId, int sid, int spid) {
+    public String assignSpeakerToSession(int userId, int sid, int speakerId) {
         Session session = getSessionById(sid);
-        if (session.getConference().getOwner().getUserId() != userId){
-            throw new BadRequestException("You are not the owner of this conference.");
-        }
-        Speaker speaker = getSpeakerById(spid);
+
+        Speaker speaker = getSpeakerById(speakerId);
+        validateSpeakerAndOwner(session, userId, speaker);
         session.setSpeaker(speaker);
         sessionRepository.save(session);
         return "Speaker successfully added to the current session";
+    }
+
+    private void validateSpeakerAndOwner(Session session, int userId, Speaker speaker) {
+        if (session.getConference().getOwner().getUserId() != userId) {
+            throw new BadRequestException("You are not the owner of this conference.");
+        }
+        List<Session> speakerSessions = speaker.getSessions().stream()
+                .filter(session1 -> session1.getStartDate().toLocalDate().isEqual(session.getStartDate().toLocalDate())).toList();
+        boolean isNotColliding = true;
+        for (Session speakerSession : speakerSessions) {
+            isNotColliding = checkHoursAreFree(speakerSession, session);
+            if(!isNotColliding){
+                break;
+            }
+        }
+        if (!isNotColliding) {
+            throw new BadRequestException("You can not add speaker in two sessions with the same time frame!");
+        }
     }
 }

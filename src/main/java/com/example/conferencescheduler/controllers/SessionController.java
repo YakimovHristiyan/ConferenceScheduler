@@ -28,11 +28,11 @@ public class SessionController extends AbstractController {
         return sessionService.deleteSession(userId, sid);
     }
 
-    @PutMapping("/session/{sid}/{spid}")
+    @PutMapping("/session/{sid}/{speakedId}")
     @ResponseStatus(code = HttpStatus.OK)
-    public String assignSpeakerToSession(@PathVariable int sid, @PathVariable int spid, HttpSession session){
+    public String assignSpeakerToSession(@PathVariable int sid, @PathVariable int speakedId, HttpSession session){
         int userId = getUserId(session);
-        return sessionService.assignSpeakerToSession(userId, sid, spid);
+        return sessionService.assignSpeakerToSession(userId, sid, speakedId);
     }
 
 }
