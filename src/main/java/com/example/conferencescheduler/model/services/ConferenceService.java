@@ -53,13 +53,14 @@ public class ConferenceService extends MasterService {
         return modelMapper.map(conference, EditConferenceDTO.class);
     }
 
-    public ConferenceDTO deleteConference(int conferenceId, int userId) {
+    public ConferenceDTO suspendConference(int conferenceId, int userId) {
         User user = getUserById(userId);
         Conference conference = getConferenceById(conferenceId);
         if (user.getUserId() != conference.getOwner().getUserId()) {
             throw new UnauthorizedException("You can not delete other owners conferences!");
         }
-        conferenceRepository.delete(conference);
+        conference.setStatus(statusRepository.getReferenceById(SUSPENDED_STATUS));
+        conferenceRepository.save(conference);
         return modelMapper.map(conference, ConferenceDTO.class);
     }
 
