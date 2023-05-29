@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 public class UserService extends MasterService {
 
     public UserWithoutPassDTO register(UserRegisterDTO dto) {
-//        modelMapper.getConfiguration().setAmbiguityIgnored(true);
         User user = generateUserObject(dto, USER_ROLE);
         userRepository.save(user);
         sendVerificationEmail(user.getEmail(), user.getUserId());

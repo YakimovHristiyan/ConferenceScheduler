@@ -7,5 +7,5 @@ import java.util.Optional;
 
 @Repository
 public interface HallRepository extends JpaRepository<Hall, Integer> {
-    Optional<Hall> findByHallId(int hallId);
+
 }
