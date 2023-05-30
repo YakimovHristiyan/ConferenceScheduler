@@ -12,7 +12,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -28,7 +27,8 @@ public abstract class MasterService {
     protected final static int CONFERENCE_OWNER_ROLE = 3;
     public final static int ACTIVE_STATUS = 1;
     public final static int INACTIVE_STATUS = 2;
-    protected final static int SUSPENDED_STATUS = 3;
+    public final static int SUSPENDED_STATUS = 3;
+    public final static int FUTURE_STATUS = 4;
     protected static final String DEF_PROFILE_IMAGE_URI = "uploads" + File.separator + "def_profile_image.png"; //TODO add the folder
 
     @Autowired
@@ -105,16 +105,6 @@ public abstract class MasterService {
         return EmailValidator.getInstance(true).isValid(email);
     }
 
-    protected static boolean isUsernameValid(String username) {
-        Pattern p = Pattern.compile("^[a-zA-Z_]([a-zA-Z0-9_]){2,16}");
-        Matcher m = p.matcher(username);
-        boolean hasMatch = m.matches();
-        if (hasMatch) {
-            return true;
-        }
-        return false;
-    }
-
     protected void sendVerificationEmail(String email, int uid) {
         new Thread(() -> {
             SimpleMailMessage message = new SimpleMailMessage();
@@ -137,15 +127,6 @@ public abstract class MasterService {
 
             emailSender.send(message);
         }).start();
-    }
-
-    protected static String getFileExtension(MultipartFile file) {
-        String name = file.getOriginalFilename();
-        int lastIndexOf = name.lastIndexOf(".");
-        if (lastIndexOf == -1) {
-            return ""; // empty extension
-        }
-        return name.substring(lastIndexOf);
     }
 
     protected User generateUserObject(UserRegisterDTO dto, int roleId) {
@@ -216,7 +197,4 @@ public abstract class MasterService {
         return speakerRepository.findSpeakerBySpeakerId(speakerId).orElseThrow(() -> new NotFoundException("Speaker not found."));
     }
 
-    protected Status getStatusById(int statusId){
-        return statusRepository.findByConferenceStatusId(statusId).orElseThrow(() -> new NotFoundException("Status does not exist."));
-    }
 }

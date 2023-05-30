@@ -9,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Configuration
 @EnableScheduling
@@ -23,22 +27,38 @@ public class Cronjob {
     @Autowired
     StatusRepository statusRepository;
 
-    @Scheduled(cron = "0 0 1 * * *")
+    @Transactional
+    @Scheduled(cron = "1 * * * * *")
     public void deleteAllSessionsFromNotActiveConferences() {
         List<Conference> conferences = conferenceRepository.findAll().stream()
-                .filter(conference -> conference.getStatus().getConferenceStatusId() != MasterService.ACTIVE_STATUS).toList();
+                .filter(conference -> conference.getStatus().getConferenceStatusId() != MasterService.ACTIVE_STATUS
+                        && conference.getStatus().getConferenceStatusId() != MasterService.FUTURE_STATUS)
+                .collect(Collectors.toList());
 
-        conferences.forEach(conference -> conference.getSessions().removeAll(conference.getSessions()));
-        conferenceRepository.saveAll(conferences);
+        conferences.forEach(conference -> conference.getSessions().clear());
         conferences.forEach(conference -> sessionRepository.deleteAllByConference_ConferenceId(conference.getConferenceId()));
+        conferenceRepository.saveAll(conferences);
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void setConferencesInactive(){
+    @Scheduled(cron = "1 * * * * *")
+    public void setConferencesInactive() {
         List<Conference> conferences = conferenceRepository.findAll().stream()
-                .filter(conference -> conference.getEndDate().isBefore(LocalDateTime.now())).toList();
+                .filter(conference -> (conference.getEndDate() == null) ||
+                        (conference.getEndDate().toLocalDate().isBefore(LocalDateTime.now().toLocalDate())))
+                .filter(conference -> conference.getStatus().getConferenceStatusId() != MasterService.INACTIVE_STATUS)
+                .collect(Collectors.toList());
 
         conferences.forEach(conference -> conference.setStatus(statusRepository.getReferenceById(MasterService.INACTIVE_STATUS)));
+        conferenceRepository.saveAll(conferences);
+    }
+
+    @Scheduled(cron = "1 * * * * *")
+    public void setConferencesActive() {
+        List<Conference> conferences = conferenceRepository.findAll().stream()
+                .filter(conference -> conference.getStartDate().toLocalDate().isEqual(LocalDateTime.now().toLocalDate()))
+                .collect(Collectors.toList());
+
+        conferences.forEach(conference -> conference.setStatus(statusRepository.getReferenceById(MasterService.ACTIVE_STATUS)));
         conferenceRepository.saveAll(conferences);
     }
 }

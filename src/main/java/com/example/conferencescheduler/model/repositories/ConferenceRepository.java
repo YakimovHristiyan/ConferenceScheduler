@@ -4,6 +4,7 @@ import com.example.conferencescheduler.model.entities.Conference;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -13,4 +14,6 @@ public interface ConferenceRepository extends JpaRepository<Conference, Integer>
     Optional<Conference> findByConferenceId(int id);
 
     Conference getConferenceByConferenceName(String name);
+
+    Optional<List<Conference>> findAllBy();
 }

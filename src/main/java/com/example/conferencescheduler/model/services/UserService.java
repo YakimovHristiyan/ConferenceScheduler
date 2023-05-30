@@ -130,16 +130,17 @@ public class UserService extends MasterService {
     public UserWithSessionDTO applyForMaximumProgram(int userId, DateDTO dateDTO) {
         List<Session> sessionsByDate = sessionRepository.getSessionByDateOrderByStartDate(dateDTO.getDate());
         List<Session> possibleSessions = new ArrayList<>();
-        if (getUserById(userId).getUserRole().getRoleId() != USER_ROLE) {
+        User user = getUserById(userId);
+        if (user.getUserRole().getRoleId() != USER_ROLE) {
             throw new ForbiddenException("You can not apply for sessions!");
         }
         if (sessionsByDate.isEmpty()) {
             throw new BadRequestException("There are no session for this date!");
         }
-        User user = assertAttendanceToAvailableSessions(getUserById(userId), dateDTO, sessionsByDate, possibleSessions);
-        userRepository.save(user);
-        UserWithSessionDTO dto = modelMapper.map(user, UserWithSessionDTO.class);
-        dto.setSessions(user.getSessions().stream().map(session -> modelMapper.map(session, AddedSessionDTO.class)).collect(Collectors.toList()));
+        User userWithNewSessions = assertAttendanceToAvailableSessions(user, dateDTO, sessionsByDate, possibleSessions);
+        userRepository.save(userWithNewSessions);
+        UserWithSessionDTO dto = modelMapper.map(userWithNewSessions, UserWithSessionDTO.class);
+        dto.setSessions(userWithNewSessions.getSessions().stream().map(session -> modelMapper.map(session, AddedSessionDTO.class)).collect(Collectors.toList()));
         return dto;
     }
 
