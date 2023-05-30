@@ -13,38 +13,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/halls")
 public class HallController extends AbstractController {
 
     @Autowired
     private HallService hallService;
 
-    @PutMapping("/hall/{cid}/{hid}")
+    @PutMapping("/{cid}/{hid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public HallDTO addHallToConference(@PathVariable int cid, @PathVariable int hid, HttpSession session) {
         int userId = getUserId(session);
         return hallService.addHallToConference(userId, hid, cid);
     }
 
-    @DeleteMapping("/hall/{cid}/{hid}")
+    @DeleteMapping("/{cid}/{hid}")
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public String removeHallFromConference(@PathVariable int cid, @PathVariable int hid, HttpSession session) {
         int userId = getUserId(session);
         return hallService.removeHallFromConference(userId, hid, cid);
     }
 
-    @GetMapping("/hall/{hid}")
+    @GetMapping("/{hid}")
     @ResponseStatus(code = HttpStatus.OK)
     public HallWithSessionsDTO viewHall(@PathVariable int hid) {
         return hallService.viewHall(hid);
     }
 
-    @GetMapping("/hall/free-halls-slots")
+    @GetMapping("/free-halls-slots")
     @ResponseStatus(code = HttpStatus.OK)
     public List<HallDTO> getAvailableTimeSlots(@RequestBody DateDTO dto) {
         return hallService.getAvailableTimeSlots(dto);
     }
 
-    @GetMapping("/hall/all-halls/{cid}")
+    @GetMapping("/conference-halls/{cid}")
     @ResponseStatus(code = HttpStatus.OK)
     public List<CreateHallDTO> getAllConferenceHalls(@PathVariable int cid){
         return hallService.getAllConferenceHalls(cid);

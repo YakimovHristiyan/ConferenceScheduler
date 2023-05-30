@@ -42,7 +42,7 @@ public class Conference {
     @JsonIgnore
     private User owner;
 
-    @OneToMany(mappedBy = "conference")
+    @OneToMany(mappedBy = "conference", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<Session> sessions;
 

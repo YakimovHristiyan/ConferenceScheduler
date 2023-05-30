@@ -4,23 +4,19 @@ import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceDetailsDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.ConferenceWithStatusDTO;
 import com.example.conferencescheduler.model.dtos.conferenceDTOs.EditConferenceDTO;
-import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.SessionDetailsDTO;
-import com.example.conferencescheduler.model.dtos.speakerDTOs.SpeakerDetailsDTO;
 import com.example.conferencescheduler.model.entities.Conference;
 import com.example.conferencescheduler.model.entities.Session;
-import com.example.conferencescheduler.model.entities.Status;
 import com.example.conferencescheduler.model.entities.User;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
 import com.example.conferencescheduler.model.exceptions.NotFoundException;
 import com.example.conferencescheduler.model.exceptions.UnauthorizedException;
-import lombok.Builder;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ConferenceService extends MasterService {
@@ -30,12 +26,16 @@ public class ConferenceService extends MasterService {
         if (user.getUserRole().getRoleId() != CONFERENCE_OWNER_ROLE) {
             throw new UnauthorizedException("You do not have permission to publish conferences!");
         }
-        if(conferenceRepository.getConferenceByConferenceName(conferenceDTO.getConferenceName()) != null){
+        if (conferenceRepository.getConferenceByConferenceName(conferenceDTO.getConferenceName()) != null) {
             throw new BadRequestException("This name for conference is taken!");
+        }
+        if (conferenceDTO.getStartDate().toLocalDate().isBefore(LocalDate.now())) {
+            throw new BadRequestException("You must publish conference at least one day before!");
         }
         Conference conference = modelMapper.map(conferenceDTO, Conference.class);
         conference.setStartDate(conferenceDTO.getStartDate().minusHours(conferenceDTO.getStartDate().getHour()));
         conference.setOwner(user);
+        conference.setStatus(statusRepository.findById(FUTURE_STATUS).orElseThrow(() -> new NotFoundException("Status not found!")));
         conferenceRepository.save(conference);
         return modelMapper.map(conference, ConferenceDTO.class);
     }
@@ -93,13 +93,4 @@ public class ConferenceService extends MasterService {
         return conf;
     }
 
-    public List<SessionDTO> getConferenceAllSessions(int cid) {
-        Conference conference = conferenceRepository.findByConferenceId(cid)
-                .orElseThrow(() -> new NotFoundException("Conference not found."));
-        return conference.getSessions()
-                .stream()
-                .map(session -> modelMapper.map(session, SessionDTO.class))
-                .toList();
-    }
-  
 }

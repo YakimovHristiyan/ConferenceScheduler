@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @PermitAll
+@RequestMapping("/users")
 public class UserController extends AbstractController {
 
     @Autowired
     private UserService userService;
 
-    @PostMapping("/users/registration")
+    @PostMapping("/registration")
     @ResponseStatus(code = HttpStatus.CREATED)
     public UserWithoutPassDTO register(@RequestBody UserRegisterDTO dto) {
         return userService.register(dto);
@@ -45,26 +46,26 @@ public class UserController extends AbstractController {
         return "You have successfully logged out!";
     }
 
-    @PutMapping("/users")
+    @PutMapping
     @ResponseStatus(code = HttpStatus.ACCEPTED)
     public ResponseEntity<EditUserDTO> editAccount(@RequestBody EditUserDTO newUser, HttpSession session) {
         int userId = getUserId(session);
         return ResponseEntity.ok(userService.editAccount(newUser, userId));
     }
 
-    @GetMapping(value = "/users/email-verification/{uid}")
+    @GetMapping(value = "/email-verification/{uid}")
     public String verifyEmail(@PathVariable int uid) {
         return userService.verifyEmail(uid);
     }
 
-    @PutMapping("/users/attendance")
+    @PutMapping("/attendance")
     @ResponseStatus(code = HttpStatus.OK)
     public UserWithSessionDTO assertAttendance(@RequestBody AttendanceDTO attendanceDTO, HttpSession session){
         int userId = getUserId(session);
         return userService.assertAttendance(userId, attendanceDTO);
     }
 
-    @PutMapping("/user/maximum-program")
+    @PutMapping("/maximum-program")
     @ResponseStatus(code = HttpStatus.OK)
     public UserWithSessionDTO applyForMaximumProgram(@RequestBody DateDTO dateDTO, HttpSession session) {
         int userId = getUserId(session);

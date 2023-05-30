@@ -1,6 +1,5 @@
 package com.example.conferencescheduler.model.dtos.conferenceDTOs;
 
-import com.example.conferencescheduler.model.entities.Status;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
