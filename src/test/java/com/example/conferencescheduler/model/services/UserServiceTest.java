@@ -1,31 +1,25 @@
 package com.example.conferencescheduler.model.services;
 
 import com.example.conferencescheduler.model.MasterTest;
+import com.example.conferencescheduler.model.dtos.hallDTOs.DateDTO;
 import com.example.conferencescheduler.model.dtos.sessionDTOs.AddedSessionDTO;
 import com.example.conferencescheduler.model.dtos.userDTOs.*;
-import com.example.conferencescheduler.model.entities.Conference;
-import com.example.conferencescheduler.model.entities.Hall;
-import com.example.conferencescheduler.model.entities.Session;
-import com.example.conferencescheduler.model.entities.User;
+import com.example.conferencescheduler.model.entities.*;
 import com.example.conferencescheduler.model.exceptions.BadRequestException;
-import com.example.conferencescheduler.model.repositories.SessionRepository;
-import com.example.conferencescheduler.model.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import static com.example.conferencescheduler.model.services.MasterService.USER_ROLE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -34,14 +28,14 @@ import static org.mockito.Mockito.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserServiceTest extends MasterTest {
 
+    private final static int USER_ID = 1;
+
     @InjectMocks
     private UserService userService;
 
     @BeforeEach
     public void setUp() {
-//        MockitoAnnotations.openMocks(this);
-        when(userRepository.save(any(User.class))).thenReturn(new User());
-
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
@@ -59,7 +53,7 @@ class UserServiceTest extends MasterTest {
         registerDTO.setFirstName(name);
 
         UserWithoutPassDTO expectedDTO = new UserWithoutPassDTO();
-        expectedDTO.setId(1);
+        expectedDTO.setId(USER_ID);
         expectedDTO.setFirstName(name);
 
         when(modelMapper.map(any(User.class), any(Class.class))).thenReturn(expectedDTO);
@@ -74,7 +68,7 @@ class UserServiceTest extends MasterTest {
     }
 
     @Test
-    void userLoginWithValidCredentialsAndVerifiedAccountShouldReturnUserWithoutPassDTO() {
+    void userLoginWithValidCredentialsAndVerified() {
         // Arrange
         String password = "Hybernate123@";
         String email = "tp@abv.bg";
@@ -91,7 +85,7 @@ class UserServiceTest extends MasterTest {
         user.setVerified(true);
 
         UserWithoutPassDTO expectedDTO = new UserWithoutPassDTO();
-        expectedDTO.setId(1);
+        expectedDTO.setId(USER_ID);
         expectedDTO.setFirstName(name);
 
         when(userRepository.findByEmail(eq(email))).thenReturn(Optional.of(user));
@@ -108,8 +102,7 @@ class UserServiceTest extends MasterTest {
     }
 
     @Test
-    void editAccount() {
-        int userId = 1;
+    void editAccountAndReturnUser() {
         String newFirstName = "John";
         String newLastName = "Doe";
         String newEmail = "john.doe@example.com";
@@ -122,7 +115,7 @@ class UserServiceTest extends MasterTest {
         newUserDTO.setPhoneNumber(newPhoneNumber);
 
         User existingUser = new User();
-        existingUser.setUserId(userId);
+        existingUser.setUserId(USER_ID);
         existingUser.setFirstName("Old");
         existingUser.setLastName("User");
         existingUser.setEmail("old.user@example.com");
@@ -135,10 +128,10 @@ class UserServiceTest extends MasterTest {
         expectedEditedUserDTO.setPhoneNumber(newPhoneNumber);
 
         when(modelMapper.map(any(User.class), eq(EditUserDTO.class))).thenReturn(expectedEditedUserDTO);
-        when(userRepository.findById(eq(userId))).thenReturn(Optional.of(existingUser));
+        when(userRepository.findById(eq(USER_ID))).thenReturn(Optional.of(existingUser));
 
         // Act
-        EditUserDTO result = userService.editAccount(newUserDTO, userId);
+        EditUserDTO result = userService.editAccount(newUserDTO, USER_ID);
 
         // Assert
         assertEquals(expectedEditedUserDTO.getFirstName(), result.getFirstName());
@@ -149,20 +142,19 @@ class UserServiceTest extends MasterTest {
     }
 
     @Test
-    void verifyEmail() {
-        int userId = 1;
+    void verifyEmailAndCheckMessage() {
         String wantedMsg = "Your account is now verified.";
         User existingUser = new User();
-        existingUser.setUserId(userId);
+        existingUser.setUserId(USER_ID);
         existingUser.setFirstName("Old");
         existingUser.setLastName("User");
         existingUser.setEmail("old.user@example.com");
         existingUser.setPhone("9876543210");
 
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
         // Act
-        String msg = userService.verifyEmail(userId);
+        String msg = userService.verifyEmail(USER_ID);
         // Assert
         assertEquals(wantedMsg, msg);
         verify(userRepository, times(1)).save(any(User.class));
@@ -170,20 +162,19 @@ class UserServiceTest extends MasterTest {
 
     @Test
     void verifyEmailAndThrowWhenIsAlreadyVerified() {
-        int userId = 1;
         String wantedMsg = "Your account is now verified.";
         User existingUser = new User();
-        existingUser.setUserId(userId);
+        existingUser.setUserId(USER_ID);
         existingUser.setFirstName("Old");
         existingUser.setLastName("User");
         existingUser.setEmail("old.user@example.com");
         existingUser.setPhone("9876543210");
         existingUser.setVerified(true);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(existingUser));
         // Act
         Exception exception = assertThrows(BadRequestException.class, () -> {
-            userService.verifyEmail(userId);
+            userService.verifyEmail(USER_ID);
         });
         String expectedMessage = "User is already verified.";
         String actualMessage = exception.getMessage();
@@ -192,15 +183,14 @@ class UserServiceTest extends MasterTest {
     }
 
     @Test
-    void testAssertAttendanceWhenUserAlreadyGuestForSessionShouldThrowBadRequestException() {
+    void testAssertAttendanceWhenUserAlreadyGuestForSessionThrowsBadRequestException() {
         // Arrange
-        int userId = 1;
         AttendanceDTO attendanceDTO = new AttendanceDTO();
         attendanceDTO.setConferenceId(1);
         attendanceDTO.setSessionId(1);
 
         User user = new User();
-        user.setUserId(userId);
+        user.setUserId(USER_ID);
         user.setSessions(new ArrayList<>());
 
         Session session = new Session();
@@ -210,17 +200,17 @@ class UserServiceTest extends MasterTest {
         conference.setConferenceId(1);
         user.getSessions().add(session);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
         when(conferenceRepository.findById(attendanceDTO.getConferenceId())).thenReturn(Optional.of(conference));
         when(sessionRepository.findBySessionId(attendanceDTO.getSessionId())).thenReturn(Optional.of(session));
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> userService.assertAttendance(userId, attendanceDTO));
+        assertThrows(BadRequestException.class, () -> userService.assertAttendance(USER_ID, attendanceDTO));
 
     }
 
     @Test
-    public void testAssertAttendanceWhenSessionHallIsFullShouldThrowBadRequestException() {
+    public void testAssertAttendanceWhenSessionHallIsFullThrowsBadRequestException() {
         // Arrange
         int userId = 1;
         AttendanceDTO attendanceDTO = new AttendanceDTO();
@@ -260,15 +250,14 @@ class UserServiceTest extends MasterTest {
     }
 
     @Test
-    public void testAssertAttendance_WhenUserHasNoSessions_ShouldSaveSessionAndReturnUserWithSessionDTO() {
+    public void testAssertAttendanceWhenUserHasNoSessionsSaveSession() {
         // Arrange
-        int userId = 1;
         AttendanceDTO attendanceDTO = new AttendanceDTO();
         attendanceDTO.setConferenceId(1);
         attendanceDTO.setSessionId(1);
 
         User user = new User();
-        user.setUserId(userId);
+        user.setUserId(USER_ID);
         user.setSessions(new ArrayList<>());
 
         Conference conference = new Conference();
@@ -288,18 +277,18 @@ class UserServiceTest extends MasterTest {
         dto.setSessions(new ArrayList<>());
         dto.getSessions().add(modelMapper.map(session, AddedSessionDTO.class));
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
         when(sessionRepository.findBySessionId(attendanceDTO.getSessionId())).thenReturn(Optional.of(session));
         when(conferenceRepository.findById(attendanceDTO.getConferenceId())).thenReturn(Optional.of(conference));
         when(sessionRepository.save(session)).thenReturn(session);
         when(modelMapper.map(any(User.class), eq(UserWithSessionDTO.class))).thenReturn(dto);
 
         // Act
-        UserWithSessionDTO result = userService.assertAttendance(userId, attendanceDTO);
+        UserWithSessionDTO result = userService.assertAttendance(USER_ID, attendanceDTO);
 
         // Assert
         assertNotNull(result);
-        assertEquals(userId, result.getUserId());
+        assertEquals(USER_ID, result.getUserId());
         assertEquals(1, result.getSessions().size());
         assertTrue(result.getSessions().contains(dto.getSessions().get(0)));
         verify(userRepository, times(1)).save(user);
@@ -307,15 +296,14 @@ class UserServiceTest extends MasterTest {
     }
 
     @Test
-    public void testAssertAttendance_WhenSessionDoesNotCollideWithUserSessions_ShouldSaveSessionAndReturnUserWithSessionDTO() {
+    public void testAssertAttendanceNotCollideUserSessionsAndSaveSession() {
         // Arrange
-        int userId = 1;
         AttendanceDTO attendanceDTO = new AttendanceDTO();
         attendanceDTO.setConferenceId(1);
         attendanceDTO.setSessionId(1);
 
         User user = new User();
-        user.setUserId(userId);
+        user.setUserId(USER_ID);
         user.setSessions(new ArrayList<>());
 
         Conference conference = new Conference();
@@ -348,18 +336,18 @@ class UserServiceTest extends MasterTest {
         userSession.setHall(hall);
         user.getSessions().add(userSession);
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
         when(sessionRepository.findBySessionId(attendanceDTO.getSessionId())).thenReturn(Optional.of(session));
         when(sessionRepository.save(session)).thenReturn(session);
         when(conferenceRepository.findById(attendanceDTO.getConferenceId())).thenReturn(Optional.of(conference));
         when(modelMapper.map(any(User.class), eq(UserWithSessionDTO.class))).thenReturn(dto);
 
         // Act
-        UserWithSessionDTO result = userService.assertAttendance(userId, attendanceDTO);
+        UserWithSessionDTO result = userService.assertAttendance(USER_ID, attendanceDTO);
 
         // Assert
         assertNotNull(result);
-        assertEquals(userId, result.getUserId());
+        assertEquals(USER_ID, result.getUserId());
         assertEquals(2, result.getSessions().size());
         assertTrue(result.getSessions().contains(dto.getSessions().get(0)));
         verify(userRepository, times(1)).save(user);
@@ -367,6 +355,50 @@ class UserServiceTest extends MasterTest {
     }
 
     @Test
-    void applyForMaximumProgram() {
+    void testApplyForMaximumProgramWhenSuccessful() {
+        // Arrange
+        LocalDateTime time = LocalDateTime.now();
+        DateDTO dateDTO = new DateDTO();
+        dateDTO.setDate(LocalDate.now());
+
+        Hall hall = new Hall();
+        hall.setHallId(1);
+        hall.setCapacity(5);
+
+
+
+        List<Session> sessionsByDate = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+        Session session = new Session();
+        session.setStartDate(time.plusMinutes(i*10));
+        session.setEndDate(time.plusMinutes(i*20));
+        session.setGuests(new ArrayList<>());
+        session.setHall(hall);
+        sessionsByDate.add(session);
+        }
+        User user = new User();
+        user.setUserRole(new UserRole());
+        user.getUserRole().setRoleId(USER_ROLE);
+        user.setSessions(new ArrayList<>());
+
+        UserWithSessionDTO dto = new UserWithSessionDTO();
+        dto.setUserId(user.getUserId());
+        dto.setSessions(new ArrayList<>());
+
+
+        when(userRepository.findById(USER_ID)).thenReturn(Optional.of(user));
+        when(sessionRepository.save(any(Session.class))).thenReturn(null);
+        when(sessionRepository.getSessionByDateOrderByStartDate(LocalDate.now())).thenReturn(sessionsByDate);
+        when(modelMapper.map(any(User.class), eq(UserWithSessionDTO.class))).thenReturn(dto);
+
+        // Act
+        UserWithSessionDTO result = userService.applyForMaximumProgram(USER_ID, dateDTO);
+
+        // Assert
+        assertNotNull(result);
+        verify(userRepository, times(1)).findById(USER_ID);
+        verify(userRepository, times(1)).save(user);
+        verify(sessionRepository, times(1)).getSessionByDateOrderByStartDate(dateDTO.getDate());
+        assertEquals(3, result.getSessions().size());
     }
 }
